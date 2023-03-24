@@ -2,13 +2,14 @@
 #define _ABB_H
 
 #include <stdbool.h>
+#include "../lib_grafos/EstructuraGrafo23.h"
 
 /** @brief Binary Search Tree. Lower elements are in the left branch, 
  * higher ones are in the right branch.
  */
 typedef struct _s_abb * abb;
 
-typedef unsigned int abb_elem;
+typedef vertice abb_elem;
 
 abb abb_empty(void);
 /* DESC: Creates an empty tree
@@ -34,7 +35,7 @@ bool abb_is_empty(abb tree);
  *     is_empty = abb_is_empty(tree);
  */
 
-bool abb_exists(abb tree, abb_elem e);
+bool abb_exists(abb tree, u32 e);
 /* DESC: Returns true if the given element `e` exists in the tree.
  *
  * PRE : {tree --> ABB}
@@ -49,7 +50,7 @@ unsigned int abb_length(abb tree);
  * POS : {tree --> ABB && (abb_is_empty(tree) || length > 0)}
  */
 
-abb abb_remove(abb tree, abb_elem e);
+abb abb_remove(abb tree, u32 e);
 /* DESC: Removes the given element. If `e` is not in the tree, it does nothing
  *       an returns the tree unchanged
  *

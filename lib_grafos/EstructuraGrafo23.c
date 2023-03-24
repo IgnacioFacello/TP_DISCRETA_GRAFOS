@@ -1,17 +1,17 @@
 
 #include <stdlib.h>
 #include <assert.h>
-#include "grafost.h"
+#include "EstructuraGrafo23.h"
 
 struct vertice_st
 {
-    elem nombre;            // Contenido del vértice
+    u32 nombre;            // Contenido del vértice
     unsigned int grado;     // Grado del vértice
     unsigned int capacidad; 
     vertice *adyacentes;    // Arreglo de punteros a vecinos
 };
 
-vertice vertice_crear(elem nombre)
+vertice vertice_crear(u32 nombre)
 {
     vertice v = malloc(sizeof(struct vertice_st));
     assert(v != NULL);
@@ -29,20 +29,41 @@ unsigned int vertice_grado(vertice v)
     return v->grado;
 }
 
-elem vertice_nombre(vertice v)
+u32 vertice_nombre(vertice v)
 {
     assert(v != NULL);
     return v->nombre;
 }
 
-vertice* vertice_adyacente(vertice v, unsigned int indice)
+bool vertice_igual(vertice v, vertice w)
+{
+    assert(v != NULL);
+    assert(w != NULL);
+    return v->nombre == w->nombre;
+}
+
+bool vertice_mayor(vertice v, vertice w)
+{
+    assert(v != NULL);
+    assert(w != NULL);
+    return v->nombre > w->nombre;
+}
+
+bool vertice_menor(vertice v, vertice w)
+{
+    assert(v != NULL);
+    assert(w != NULL);
+    return v->nombre < w->nombre;
+}
+
+vertice vertice_adyacente(vertice v, unsigned int indice)
 {
     assert(v != NULL);
     assert(indice < v->grado);
     return v->adyacentes[indice];
 }
 
-void vertice_agregar_adyacente(vertice v)
+void vertice_agregar_adyacente(vertice v, vertice w)
 {
     assert(v != NULL);
     v->grado++;
@@ -52,7 +73,7 @@ void vertice_agregar_adyacente(vertice v)
         v->adyacentes = realloc(v->adyacentes, v->capacidad * sizeof(vertice));
         assert(v->adyacentes != NULL);
     }
-    v->adyacentes[v->grado - 1] = &v;
+    v->adyacentes[v->grado - 1] = w;
 }
 
 vertice vertice_destruir(vertice v)

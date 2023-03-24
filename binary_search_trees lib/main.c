@@ -4,6 +4,7 @@
 #include <stdlib.h>
 
 #include "abb.h" /* TAD abb */
+#include "../lib_grafos/EstructuraGrafo23.h" /* TAD vertice */
 
 
 void print_help(char *program_name) {
@@ -45,13 +46,13 @@ abb abb_from_file(const char *filepath) {
         exit(EXIT_FAILURE);
     }
     while (i < size) {
-        abb_elem elem;
+        u32 elem;
         res = fscanf(file," %u ", &(elem));
         if (res != 1) {
             fprintf(stderr, "Invalid array.\n");
             exit(EXIT_FAILURE);
         }
-        read_tree = abb_add(read_tree, elem);
+        read_tree = abb_add(read_tree, vertice_crear(elem));
 
        ++i;
     }
@@ -61,6 +62,7 @@ abb abb_from_file(const char *filepath) {
 
 int main(int argc, char *argv[]) {
     char *filepath = NULL;
+    abb_elem *array;
 
     /* parse the filepath given in command line arguments */
     filepath = parse_filepath(argc, argv);
@@ -105,7 +107,8 @@ selection:
             printf("\nAdd: ");
             ret = fscanf(stdin,"%u", &choice);
         }
-        tree = abb_add(tree, choice);
+        vertice new_ver= vertice_crear(choice);
+        tree = abb_add(tree, new_ver);
         goto selection;
     } else if (choice == 3)
     {
@@ -145,9 +148,9 @@ selection:
     {
         if (!abb_is_empty(tree)) {
         printf("\n");
-        printf(" raiz: %d\n minimo: %d\n maximo: %d", abb_root(tree),
-                                                       abb_min(tree),
-                                                       abb_max(tree));
+        printf(" raiz: %u\n minimo: %u\n maximo: %u", vertice_nombre(abb_root(tree)),
+                                                       vertice_nombre(abb_min(tree)),
+                                                       vertice_nombre(abb_max(tree)));
         } else {
             printf("\nÁrbol vacío");
         }
@@ -157,11 +160,11 @@ selection:
         if (!abb_is_empty(tree)) {
         printf("\n");
         int tree_length = abb_length(tree) - 1;
-        abb_elem *array = abb_mintomax_array(tree, tree_length);
+        array = abb_mintomax_array(tree, tree_length);
         printf("[ ");
         for (int i = 0; i <= tree_length; i++)
             {
-                printf("%u", array[i]);
+                printf("%u", vertice_nombre(array[i]));
                 if (i<tree_length)
                 {
                     printf(", ");
@@ -174,7 +177,13 @@ selection:
         }
         goto selection;
     }
-    
+    //! Segmentation fault desoues de elegir 8
+    //* Todo lo demas parece funcionar bien
+    for (size_t i = 0; i < abb_length(tree); i++)
+    {
+        array[i] = vertice_destruir(array[i]);
+    }
+    free(array);
     tree = abb_destroy(tree);
     return (EXIT_SUCCESS);
 }
