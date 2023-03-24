@@ -35,8 +35,9 @@ bool abb_is_empty(abb tree);
  *     is_empty = abb_is_empty(tree);
  */
 
-bool abb_exists(abb tree, u32 e);
-/* DESC: Returns true if the given element `e` exists in the tree.
+vertex abb_exists(abb tree, u32 e);
+/* DESC: Returns teh vertex if the given element with name `e` exists in the tree.
+ * otherwise returns NULL
  *
  * PRE : {tree --> ABB}
  *     exists = abb_exists(tree, e);

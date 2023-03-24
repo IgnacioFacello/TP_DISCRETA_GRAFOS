@@ -102,7 +102,7 @@ bool abb_is_empty(abb tree) {
     return tree == NULL;
 }
 
-bool abb_exists(abb tree, u32 e) {
+vertex abb_exists(abb tree, u32 e) {
     bool exists=false;
     assert(invrep(tree));
     struct _s_abb *p = tree;
@@ -113,7 +113,7 @@ bool abb_exists(abb tree, u32 e) {
         else if (vertex_name(p->elem) > e) { p = p->left; }
         
     }
-    return exists;
+    return p->elem;
 }
 
 u32 abb_length(abb tree) {
