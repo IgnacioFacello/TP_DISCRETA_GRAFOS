@@ -4,26 +4,51 @@
 #include <stdbool.h>
 
 typedef unsigned int u32;
-typedef struct vertice_st *vertice;
+typedef struct vertex_st *vertex;
 
-vertice vertice_crear(u32 e);
+/**
+ * @brief Create a new vertex with the given name.
+*/
+vertex vertex_create(u32 e);
 
-unsigned int vertice_grado(vertice v);
+/**
+ * @brief Returns the number of neighbors of the given vertex.
+*/
+unsigned int vertex_grade(vertex v);
 
-u32 vertice_nombre(vertice v);
+/**
+ * @brief Returns the name of the given vertex.
+*/
+u32 vertex_name(vertex v);
 
-vertice vertice_adyacente(vertice v, unsigned int i);
+/**
+ * @brief Returns the i-th neighbor of the given vertex.
+*/
+vertex vertex_neighbor(vertex v, unsigned int i);
 
-bool vertice_igual(vertice v, vertice w);
+/**
+ * @brief Returns true if both vertexes have the same name.
+*/
+bool vertex_eq(vertex v, vertex w);
 
-bool vertice_mayor(vertice v, vertice w);
+/**
+ * @brief Returns true if the first vertex has a greater name than the second one.
+*/
+bool vertex_gt(vertex v, vertex w);
 
-bool vertice_menor(vertice v, vertice w);
+/**
+ * @brief Returns true if the first vertex has a lower name than the second one.
+*/
+bool vertex_lt(vertex v, vertex w);
 
-void vertice_agregar_adyacente(vertice v, vertice w);
+/**
+ * @brief Adds a new neighbor to the given vertex.
+*/
+void vertex_new_neighbor(vertex v, vertex w);
 
-void vertice_doble_referencia(vertice v, vertice w);
-
-vertice vertice_destruir(vertice v);
+/**
+ * @brief Frees allocated memory of the given vertex.
+*/
+vertex vertex_destroy(vertex v);
 
 #endif

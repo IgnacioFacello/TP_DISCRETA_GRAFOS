@@ -9,7 +9,7 @@
  */
 typedef struct _s_abb * abb;
 
-typedef vertice abb_elem;
+typedef vertex abb_elem;
 
 abb abb_empty(void);
 /* DESC: Creates an empty tree
@@ -51,7 +51,7 @@ unsigned int abb_length(abb tree);
  */
 
 abb abb_remove(abb tree, u32 e);
-/* DESC: Removes the given element. If `e` is not in the tree, it does nothing
+/* DESC: [NOT WORKING] Removes the given element. If `e` is not in the tree, it does nothing
  *       an returns the tree unchanged
  *
  * PRE : {tree --> ABB}
@@ -91,8 +91,16 @@ void abb_dump(abb tree);
  */
 
 abb_elem* abb_mintomax_array(abb tree, int tree_length);
+/**
+ * DESC: Returns an array with the elements of the tree, ordered from min to max.
+ * 
+ * PRE : {tree --> ABB}
+*/
 
 abb_elem* abb_freearray(abb_elem* array);
+/**
+ * DESC: Frees the memory allocated for the array.
+*/
 
 abb abb_destroy(abb tree);
 /* DESC: Destroy the given tree, freeing all the allocated resources.

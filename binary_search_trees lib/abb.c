@@ -10,29 +10,45 @@ struct _s_abb {
     struct _s_abb *right;
 };
 
+/**
+ * @brief Compare two elements of the tree.
+*/
 static bool elem_eq(abb_elem v, abb_elem w){
-    return vertice_igual(v,w);
+    return vertex_eq(v,w);
 }
 
+/**
+ * @brief Evaluate if element v is to the right of right.
+*/
 static bool elem_right(abb_elem v, abb_elem right) {
-    return !vertice_igual(v,right) && vertice_menor(v,right); 
+    return !vertex_eq(v,right) && vertex_lt(v,right); 
 }
 
-    /* @brief e != right && e < right */
+/**
+ * @brief e != right && e < right
+*/
 static bool nombre_right(u32 e, u32 right) {
     return e != right && (e < right);
 }
 
+/**
+ * @brief Evaluate if element v is to the left of left.
+*/
 static bool elem_left(abb_elem v, abb_elem left) {
-    return !vertice_igual(v,left) && vertice_mayor(v,left); 
+    return !vertex_eq(v,left) && vertex_gt(v,left); 
 }
 
-    /* @brief e != left && e > left */
+/**
+ *  @brief e != left && e > left 
+ */
 static bool nombre_left(u32 e, u32 left) {
     return e != left && (e > left);
 }
 
-
+/**
+ * @brief Verify the invariant representation of the tree.
+ * Only for testing purposes.
+*/
 static bool invrep(abb tree) {
     bool b = true;
     if (tree != NULL) { /* If not empty tree */
@@ -77,7 +93,7 @@ abb abb_add(abb tree, abb_elem e) {
     if (q == NULL) { tree = create_node(e); }
     else if (elem_right(q->elem,e)) { q->right = create_node(e); }
     else if (elem_left(q->elem,e)) { q->left = create_node(e); }
-    node_equal: assert(invrep(tree) && abb_exists(tree, vertice_nombre(e)));
+    node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));
     return tree;
 }
 
@@ -92,16 +108,16 @@ bool abb_exists(abb tree, u32 e) {
     struct _s_abb *p = tree;
     while (p != NULL && !exists)
     {
-        if (vertice_nombre(p->elem) == e) { exists = true; }
-        else if (vertice_nombre(p->elem) < e) { p = p->right; }
-        else if (vertice_nombre(p->elem) > e) { p = p->left; }
+        if (vertex_name(p->elem) == e) { exists = true; }
+        else if (vertex_name(p->elem) < e) { p = p->right; }
+        else if (vertex_name(p->elem) > e) { p = p->left; }
         
     }
     return exists;
 }
 
-unsigned int abb_length(abb tree) {
-    unsigned int length=0;
+u32 abb_length(abb tree) {
+    u32 length=0;
     assert(invrep(tree));
     if (tree != NULL)
     {
@@ -113,9 +129,6 @@ unsigned int abb_length(abb tree) {
     return length;
 }
 
-/**
- * @brief Find the replacement node for the node to be removed
-*/
 static struct _s_abb *find_replacement(abb tree){
     struct _s_abb *rep = NULL;
     // * Right / left tree has oposite branche empty
@@ -146,29 +159,29 @@ abb abb_remove(abb tree, u32 e) {
     // * Find node
     struct _s_abb *p = tree;
     struct _s_abb *q = NULL;
-    while ( vertice_nombre(p->elem) != e )
+    while ( vertex_name(p->elem) != e )
     {
-        if (nombre_right(vertice_nombre(p->elem),e)) { q = p ; p = p->right; }
-        else if (nombre_left(vertice_nombre(p->elem),e)) { q = p ; p = p->left; }
+        if (nombre_right(vertex_name(p->elem),e)) { q = p ; p = p->right; }
+        else if (nombre_left(vertex_name(p->elem),e)) { q = p ; p = p->left; }
         if ( p == NULL) {goto end;}
     }
     // * Find replacement
     struct _s_abb *rep = find_replacement(p);
     // * Switch nodes
     if (rep == NULL) { // * p is a leaf
-        if (nombre_right(vertice_nombre(q->elem),e)) { q->right = NULL; }
-        else if (nombre_left(vertice_nombre(q->elem),e)) { q->left = NULL; }
+        if (nombre_right(vertex_name(q->elem),e)) { q->right = NULL; }
+        else if (nombre_left(vertex_name(q->elem),e)) { q->left = NULL; }
         free(p);
     } else if (rep->left == NULL && rep->right == NULL)
     { // * rep is leaf
         abb_elem rep_elem = rep->elem;
-        tree = abb_remove(tree, vertice_nombre(rep->elem));
+        tree = abb_remove(tree, vertex_name(rep->elem));
         p->elem = rep_elem;
         // * Replace element(p->elem = rep->elem) and erase leaf(rep)
     } else   
     { // * replacement if one of the branches of p
-        if (nombre_right(vertice_nombre(q->elem),e)) { q->right = rep; }
-        else if (nombre_left(vertice_nombre(q->elem),e)) { q->left = rep; }
+        if (nombre_right(vertex_name(q->elem),e)) { q->right = rep; }
+        else if (nombre_left(vertex_name(q->elem),e)) { q->left = rep; }
         if (rep == p->left)
         {
             rep->right = p->right;
@@ -189,12 +202,12 @@ abb_elem abb_root(abb tree) {
     abb_elem root;
     assert(invrep(tree) && !abb_is_empty(tree));
     root = tree->elem;
-    assert(abb_exists(tree, vertice_nombre(root)));
+    assert(abb_exists(tree, vertex_name(root)));
     return root;
 }
 
 abb_elem abb_max(abb tree) {
-    vertice max_e;
+    vertex max_e;
     assert(invrep(tree) && !abb_is_empty(tree));
     max_e = tree->elem;
     struct _s_abb *p = tree;
@@ -203,12 +216,12 @@ abb_elem abb_max(abb tree) {
         p=p->right;
         max_e = p->elem;
     }
-    assert(invrep(tree) && abb_exists(tree, vertice_nombre(max_e)));
+    assert(invrep(tree) && abb_exists(tree, vertex_name(max_e)));
     return max_e;
 }
 
 abb_elem abb_min(abb tree) {
-    vertice min_e;
+    vertex min_e;
     assert(invrep(tree) && !abb_is_empty(tree));
     min_e = tree->elem;
     struct _s_abb *p = tree;
@@ -217,36 +230,29 @@ abb_elem abb_min(abb tree) {
         p=p->left;
         min_e = p->elem;       
     }
-    assert(invrep(tree) && abb_exists(tree, vertice_nombre(min_e)));
+    assert(invrep(tree) && abb_exists(tree, vertex_name(min_e)));
     return min_e;
 }
 
 void abb_dump(abb tree) {
     assert(invrep(tree));
     if (tree != NULL) {
-        printf("%u ", vertice_nombre(tree->elem));
+        printf("%u ", vertex_name(tree->elem));
         abb_dump(tree->left);
         abb_dump(tree->right);
     }
 }
 
-/*
-* Con solo cambiar el orden del print hacemos que la funcion muestre primero el elemento del nodo,
-* en vez de esperar a llegar a una hoja.
-* Entonces, este abb_dump imprime el arbol como <raiz> <rama derecha> <rama izquierda>. El orden de las ramas no importa,
-* ya que no importa como agreguemos al arbol los dos primeros nodos que la forman, las propiedades del
-* abb se mantienen.
+/**
+ * @brief Recursive part of abb_mintomax_array()
 */
-
 static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
     // tries to go left
     if (tree->left != NULL) {
         abb_mintomax_array_rec(tree->left, array, counter);
     }
     // cant go left => lowest element on branch, add
-    vertice elem = malloc(sizeof(vertice)); // Should be a new reference
-    vertice_doble_referencia(elem, tree->elem);
-    array[*counter] = elem; 
+    array[*counter] = tree->elem; 
     (*counter)++;
     // try going right
     if (tree->right != NULL) { 
@@ -256,9 +262,9 @@ static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
 
 
 /**
- * @brief Recorre el arbol en in-orden y guarda los elementos en un array
- * @param tree Arbol a recorrer
- * @param tree_length Cantidad de elementos en el arbol. Obtenida por abb_length()
+ * @brief Returns an array with the elements of the tree, ordered from min to max.
+ * @param tree
+ * @param tree_length Number of elements of the tree. Obtained by calling abb_length(tree)
 */
 abb_elem* abb_mintomax_array(abb tree, int tree_length){
     assert(invrep(tree));
@@ -269,12 +275,18 @@ abb_elem* abb_mintomax_array(abb tree, int tree_length){
     return array;
 }
 
+/**
+ * @brief Frees the memory allocated by abb_mintomax_array()
+*/
 abb_elem* abb_freearray(abb_elem* array)
 {
     free(array);
     return NULL;
 }
 
+/**
+ * @brief Frees the memory allocated by the tree structure, leaves all elements alocated.
+*/
 abb abb_destroy(abb tree) {
     assert(invrep(tree));
     if (!abb_is_empty(tree)){

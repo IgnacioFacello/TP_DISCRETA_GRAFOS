@@ -52,7 +52,7 @@ abb abb_from_file(const char *filepath) {
             fprintf(stderr, "Invalid array.\n");
             exit(EXIT_FAILURE);
         }
-        read_tree = abb_add(read_tree, vertice_crear(elem));
+        read_tree = abb_add(read_tree, vertex_create(elem));
 
        ++i;
     }
@@ -70,13 +70,6 @@ int main(int argc, char *argv[]) {
 
     /* parse the file to obtain an abb with the elements */
     abb tree = abb_from_file(filepath);
-
-    if (!abb_is_empty(tree)) 
-    {
-        printf("\n");
-        array_size = abb_length(tree);
-        array = abb_mintomax_array(tree, array_size);
-    }
 
     system("clear");
     printf("-------------------------------------------------------------------------------\n");
@@ -117,7 +110,7 @@ selection:
             printf("\nAdd: ");
             ret = fscanf(stdin,"%u", &choice);
         }
-        vertice new_ver= vertice_crear(choice);
+        vertex new_ver= vertex_create(choice);
         tree = abb_add(tree, new_ver);
         goto selection;
     } else if (choice == 3)
@@ -158,46 +151,53 @@ selection:
     {
         if (!abb_is_empty(tree)) {
         printf("\n");
-        printf(" raiz: %u\n minimo: %u\n maximo: %u", vertice_nombre(abb_root(tree)),
-                                                       vertice_nombre(abb_min(tree)),
-                                                       vertice_nombre(abb_max(tree)));
+        printf(" raiz: %u\n minimo: %u\n maximo: %u", vertex_name(abb_root(tree)),
+                                                       vertex_name(abb_min(tree)),
+                                                       vertex_name(abb_max(tree)));
         } else {
             printf("\nÁrbol vacío");
         }
         goto selection;
     } else if (choice == 7)
     {
-        if (!abb_is_empty(tree)) {
-        printf("[ ");
-        for (unsigned int i = 0; i < array_size; i++)
-            {
-                printf("%u", vertice_nombre(array[i]));
-                if (i<array_size-1)
+        if (!abb_is_empty(tree)) 
+        {
+            printf("\n");
+            array_size = abb_length(tree);
+            array = abb_mintomax_array(tree, array_size);
+            printf("[ ");
+            for (unsigned int i = 0; i < array_size; i++)
                 {
-                    printf(", ");
+                    printf("%u", vertex_name(array[i]));
+                    if (i<array_size-1)
+                    {
+                        printf(", ");
+                    }
                 }
-            }
-        printf("]\n");
-        //array = abb_freearray(array);
+            printf("]\n");
+            array = abb_freearray(array);
         } else {
             printf("\nÁrbol vacío");
         }
         goto selection;
     }
-    tree = abb_destroy(tree);
 
     printf("\nGrafo final: \n[ ");
+    array_size = abb_length(tree);
+    array = abb_mintomax_array(tree, array_size);
     for (unsigned int i = 0; i < array_size; i++)
         {
-            printf("%u", vertice_nombre(array[i]));
+            printf("%u", vertex_name(array[i]));
             if (i<array_size-1)
             {
                 printf(", ");
             }
-            array[i] =  vertice_destruir(array[i]);
+            array[i] =  vertex_destroy(array[i]);
         }
     printf("]\n\n");
     free(array);
+    
+    tree = abb_destroy(tree);
 
     return (EXIT_SUCCESS);
 }

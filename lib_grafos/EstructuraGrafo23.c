@@ -3,92 +3,85 @@
 #include <assert.h>
 #include "EstructuraGrafo23.h"
 
-struct vertice_st
+struct vertex_st
 {
-    u32 nombre;            // Contenido del vértice
-    unsigned int grado;     // Grado del vértice
-    unsigned int capacidad; 
-    vertice *adyacentes;    // Arreglo de punteros a vecinos
+    u32 name;            // Contenido del vértice
+    u32 grade;     // Grado del vértice
+    u32 cap; 
+    vertex *neighbors;    // Arreglo de punteros a vecinos
 };
 
-vertice vertice_crear(u32 nombre)
+vertex vertex_create(u32 name)
 {
-    vertice v = malloc(sizeof(struct vertice_st));
+    vertex v = malloc(sizeof(struct vertex_st));
     assert(v != NULL);
-    v->nombre = nombre;
-    v->grado = 0;
-    v->capacidad = 1;
-    v->adyacentes = malloc(v->capacidad * sizeof(vertice));
-    assert(v->adyacentes != NULL);
+    v->name = name;
+    v->grade = 0;
+    v->cap = 1;
+    v->neighbors = malloc(v->cap * sizeof(vertex));
+    assert(v->neighbors != NULL);
     return v;
 }
 
-unsigned int vertice_grado(vertice v)
+u32 vertex_grade(vertex v)
 {
     assert(v != NULL);
-    return v->grado;
+    return v->grade;
 }
 
-u32 vertice_nombre(vertice v)
+u32 vertex_name(vertex v)
 {
     assert(v != NULL);
-    return v->nombre;
+    return v->name;
 }
 
-bool vertice_igual(vertice v, vertice w)
+bool vertex_eq(vertex v, vertex w)
 {
     assert(v != NULL);
     assert(w != NULL);
-    return v->nombre == w->nombre;
+    return v->name == w->name;
 }
 
-bool vertice_mayor(vertice v, vertice w)
+bool vertex_gt(vertex v, vertex w)
 {
     assert(v != NULL);
     assert(w != NULL);
-    return v->nombre > w->nombre;
+    return v->name > w->name;
 }
 
-bool vertice_menor(vertice v, vertice w)
+bool vertex_lt(vertex v, vertex w)
 {
     assert(v != NULL);
     assert(w != NULL);
-    return v->nombre < w->nombre;
+    return v->name < w->name;
 }
 
-vertice vertice_adyacente(vertice v, unsigned int indice)
+vertex vertex_neighbor(vertex v, u32 indice)
 {
     assert(v != NULL);
-    assert(indice < v->grado);
-    return v->adyacentes[indice];
+    assert(indice < v->grade);
+    return v->neighbors[indice];
 }
 
-void vertice_agregar_adyacente(vertice v, vertice w)
+void vertex_new_neighbor(vertex v, vertex w)
 {
     assert(v != NULL);
-    v->grado++;
-    if (v->grado > v->capacidad)
+    v->grade++;
+    if (v->grade > v->cap)
     {
-        v->capacidad *= 2;
-        v->adyacentes = realloc(v->adyacentes, v->capacidad * sizeof(vertice));
-        assert(v->adyacentes != NULL);
+        v->cap *= 2;
+        v->neighbors = realloc(v->neighbors, v->cap * sizeof(vertex));
+        assert(v->neighbors != NULL);
     }
-    v->adyacentes[v->grado - 1] = w;
+    v->neighbors[v->grade - 1] = w;
 }
 
-void vertice_doble_referencia(vertice v, vertice w)
+vertex vertex_destroy(vertex v)
 {
     assert(v != NULL);
-    assert(w != NULL);
-    *v = *w;
-}
-
-vertice vertice_destruir(vertice v)
-{
-    assert(v != NULL);
-    if (v->adyacentes != NULL)
+    if (v->neighbors != NULL)
     {
-        free(v->adyacentes);
+        free(v->neighbors);
     }
     free(v);
     return NULL;
