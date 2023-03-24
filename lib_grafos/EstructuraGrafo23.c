@@ -76,10 +76,20 @@ void vertice_agregar_adyacente(vertice v, vertice w)
     v->adyacentes[v->grado - 1] = w;
 }
 
+void vertice_doble_referencia(vertice v, vertice w)
+{
+    assert(v != NULL);
+    assert(w != NULL);
+    *v = *w;
+}
+
 vertice vertice_destruir(vertice v)
 {
     assert(v != NULL);
-    free(v->adyacentes);
+    if (v->adyacentes != NULL)
+    {
+        free(v->adyacentes);
+    }
     free(v);
     return NULL;
 }

@@ -63,6 +63,7 @@ abb abb_from_file(const char *filepath) {
 int main(int argc, char *argv[]) {
     char *filepath = NULL;
     abb_elem *array;
+    unsigned int array_size;
 
     /* parse the filepath given in command line arguments */
     filepath = parse_filepath(argc, argv);
@@ -70,9 +71,18 @@ int main(int argc, char *argv[]) {
     /* parse the file to obtain an abb with the elements */
     abb tree = abb_from_file(filepath);
 
+    if (!abb_is_empty(tree)) 
+    {
+        printf("\n");
+        array_size = abb_length(tree);
+        array = abb_mintomax_array(tree, array_size);
+    }
+
+    system("clear");
+    printf("-------------------------------------------------------------------------------\n");
 selection:
     printf(
-    "\n * 1 ........ Mostrar árbol por pantalla\n"
+    " * 1 ........ Mostrar árbol por pantalla\n"
     " * 2 ........ Agregar un elemento\n"
     " * 3 ........ Eliminar un elemento\n"
     " * 4 ........ Chequear existencia de elemento\n"
@@ -91,7 +101,7 @@ selection:
             printf("\nFormato no reconocido\n");
             goto selection;
         }
-        
+        printf("-------------------------------------------------------------------------------\n");
     }
     if (choice == 1)
     {
@@ -158,32 +168,36 @@ selection:
     } else if (choice == 7)
     {
         if (!abb_is_empty(tree)) {
-        printf("\n");
-        int tree_length = abb_length(tree) - 1;
-        array = abb_mintomax_array(tree, tree_length);
         printf("[ ");
-        for (int i = 0; i <= tree_length; i++)
+        for (unsigned int i = 0; i < array_size; i++)
             {
                 printf("%u", vertice_nombre(array[i]));
-                if (i<tree_length)
+                if (i<array_size-1)
                 {
                     printf(", ");
                 }
             }
         printf("]\n");
-        array = abb_freearray(array);
+        //array = abb_freearray(array);
         } else {
             printf("\nÁrbol vacío");
         }
         goto selection;
     }
-    //! Segmentation fault desoues de elegir 8
-    //* Todo lo demas parece funcionar bien
-    for (size_t i = 0; i < abb_length(tree); i++)
-    {
-        array[i] = vertice_destruir(array[i]);
-    }
-    free(array);
     tree = abb_destroy(tree);
+
+    printf("\nGrafo final: \n[ ");
+    for (unsigned int i = 0; i < array_size; i++)
+        {
+            printf("%u", vertice_nombre(array[i]));
+            if (i<array_size-1)
+            {
+                printf(", ");
+            }
+            array[i] =  vertice_destruir(array[i]);
+        }
+    printf("]\n\n");
+    free(array);
+
     return (EXIT_SUCCESS);
 }

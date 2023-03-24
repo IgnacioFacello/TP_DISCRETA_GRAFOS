@@ -244,7 +244,9 @@ static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
         abb_mintomax_array_rec(tree->left, array, counter);
     }
     // cant go left => lowest element on branch, add
-    array[*counter] = tree->elem; 
+    vertice elem = malloc(sizeof(vertice)); // Should be a new reference
+    vertice_doble_referencia(elem, tree->elem);
+    array[*counter] = elem; 
     (*counter)++;
     // try going right
     if (tree->right != NULL) { 

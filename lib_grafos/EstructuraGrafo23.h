@@ -22,6 +22,8 @@ bool vertice_menor(vertice v, vertice w);
 
 void vertice_agregar_adyacente(vertice v, vertice w);
 
+void vertice_doble_referencia(vertice v, vertice w);
+
 vertice vertice_destruir(vertice v);
 
 #endif
