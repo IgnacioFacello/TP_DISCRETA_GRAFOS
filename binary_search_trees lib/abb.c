@@ -106,14 +106,15 @@ vertex abb_exists(abb tree, u32 e) {
     bool exists=false;
     assert(invrep(tree));
     struct _s_abb *p = tree;
+    vertex ret = NULL;
     while (p != NULL && !exists)
     {
-        if (vertex_name(p->elem) == e) { exists = true; }
+        if (vertex_name(p->elem) == e) { exists = true; ret = p->elem; }
         else if (vertex_name(p->elem) < e) { p = p->right; }
         else if (vertex_name(p->elem) > e) { p = p->left; }
         
     }
-    return p->elem;
+    return ret;
 }
 
 u32 abb_length(abb tree) {
@@ -252,7 +253,8 @@ static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
         abb_mintomax_array_rec(tree->left, array, counter);
     }
     // cant go left => lowest element on branch, add
-    array[*counter] = tree->elem; 
+    array[*counter] = tree->elem;
+    vertex_set_index(tree->elem, *counter);
     (*counter)++;
     // try going right
     if (tree->right != NULL) { 

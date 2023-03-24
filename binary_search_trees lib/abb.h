@@ -21,7 +21,7 @@ abb abb_empty(void);
 
 abb abb_add(abb tree, abb_elem e);
 /* DESC: Adds element `e` to the tree. If `e` is already in `tree` then the
- *       call has no effect.
+ *       call has no efect.
  *
  * PRE : {tree --> ABB}
  *     tree = abb_add(tree, e);

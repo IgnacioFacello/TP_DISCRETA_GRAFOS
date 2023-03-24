@@ -11,6 +11,10 @@ typedef struct vertex_st *vertex;
 */
 vertex vertex_create(u32 e);
 
+vertex vertex_set_index(vertex v, u32 index);
+
+u32 vertex_index(vertex v);
+
 /**
  * @brief Returns the number of neighbors of the given vertex.
 */

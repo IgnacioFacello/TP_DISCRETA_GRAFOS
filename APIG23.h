@@ -10,11 +10,9 @@
 #include "EstructuraGrafo23.h"
 
 
-
 //Grafo es un puntero a una estructura GrafoSt, la cual debe estar definida en el .h de arriba
 
-typedef GrafoSt *Grafo;
-
+typedef struct GrafoSt * Grafo;
 
 //construcci'on/destrucci'on
 
@@ -34,9 +32,9 @@ u32 Delta(Grafo G);
 
 //funciones de extraccion de informacion de vertices 
 
-u32 Nombre(u32 i,Grafo G);
-u32 Grado(u32 i,Grafo G);
-u32 IndiceVecino(u32 j,u32 i,Grafo G);
+u32 Nombre(u32 i, Grafo G);
+u32 Grado(u32 i, Grafo G);
+u32 IndiceVecino(u32 j, u32 i, Grafo G);
 
 
 #endif
