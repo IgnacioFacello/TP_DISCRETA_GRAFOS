@@ -91,7 +91,7 @@ void abb_dump(abb tree);
  *     abb_dump(tree);
  */
 
-abb_elem* abb_mintomax_array(abb tree, int tree_length);
+abb_elem* abb_mintomax_array(abb tree, unsigned int tree_length);
 /**
  * DESC: Returns an array with the elements of the tree, ordered from min to max.
  * 

@@ -103,7 +103,7 @@ bool abb_is_empty(abb tree) {
 }
 
 vertex abb_exists(abb tree, u32 e) {
-    bool exists=false;
+    bool exists = false;
     assert(invrep(tree));
     struct _s_abb *p = tree;
     vertex ret = NULL;
@@ -247,7 +247,7 @@ void abb_dump(abb tree) {
 /**
  * @brief Recursive part of abb_mintomax_array()
 */
-static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
+static void abb_mintomax_array_rec(abb tree, abb_elem* array, unsigned int* counter){
     // tries to go left
     if (tree->left != NULL) {
         abb_mintomax_array_rec(tree->left, array, counter);
@@ -268,9 +268,9 @@ static void abb_mintomax_array_rec(abb tree, abb_elem* array, int* counter){
  * @param tree
  * @param tree_length Number of elements of the tree. Obtained by calling abb_length(tree)
 */
-abb_elem* abb_mintomax_array(abb tree, int tree_length){
+abb_elem* abb_mintomax_array(abb tree, unsigned int tree_length){
     assert(invrep(tree));
-    int counter = 0;
+    unsigned int counter = 0;
     abb_elem* array = malloc(tree_length * sizeof(abb_elem));
     abb_mintomax_array_rec(tree, array, &counter);
     assert(invrep(tree));

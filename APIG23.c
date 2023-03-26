@@ -18,12 +18,9 @@ Grafo ConstruirGrafo()
 {
     Grafo G = malloc(sizeof(struct GrafoSt));
     G->delta = 0;
-    int count = 0;
-    char* str = malloc(sizeof(char) * 1000);    /* ESTO ES TEMPORAL */
-    while (fscanf(stdin, "c %[^\n]\n", str) != 0) {
-        count++;
-    }
-    printf("count: %d\n", count);
+    char* str = malloc(sizeof(char) * 1000);  
+    while (fscanf(stdin, "c %[^\n]\n", str) != 0);
+    free(str);
 
     if (fscanf(stdin, "p edge %u %u\n", &G->vertex_numbers, &G->edge_numbers) == 0) {
         free(G);
@@ -33,12 +30,11 @@ Grafo ConstruirGrafo()
 
     //Loading Graph to Tree
     abb tree = abb_empty();
-    u32 counter = 0;
+    u32 i = 0;
     u32 input1 = 0, input2 = 0;
     vertex vertexA = NULL, vertexB = NULL;
 
-    while (fscanf(stdin, "e %u %u\n", &input1, &input2) && counter < G->edge_numbers ) {
-        counter++;
+    while (fscanf(stdin, "e %u %u\n", &input1, &input2) && i < G->edge_numbers) {
         vertexA = abb_exists(tree, input1);
         if (vertexA == NULL) {
             vertexA = vertex_create(input1);
@@ -47,7 +43,7 @@ Grafo ConstruirGrafo()
 
         vertexB = abb_exists(tree, input2);
         if (vertexB == NULL) {
-            vertexB = vertex_create(input1);
+            vertexB = vertex_create(input2);
             tree = abb_add(tree, vertexB);  
         }
 
@@ -61,9 +57,11 @@ Grafo ConstruirGrafo()
         if (vertex_grade(vertexB) > G->delta) {
             G->delta = vertex_grade(vertexB);
         }
+
+        i++;
     }
-    
-    G->vertexs = abb_mintomax_array(tree, abb_length(tree));
+
+    G->vertexs = abb_mintomax_array(tree, G->vertex_numbers);
     abb_destroy(tree);
 
     return G;
@@ -111,7 +109,7 @@ u32 IndiceVecino(u32 j, u32 i, Grafo G) {
 }
 
 void MostrarGrafo (Grafo G) {
-    for (unsigned int i = 0; i < G->vertex_numbers ; i++) {
+    for (unsigned int i = 0; i < G->vertex_numbers; i++) {
         printf("%u ", Nombre(i, G));
     }
     printf("\n");

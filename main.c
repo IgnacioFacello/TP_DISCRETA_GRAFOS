@@ -1,5 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 
-int main ();
+#include "APIG23.h"
 
-    
+int main (void) {
+    Grafo G = ConstruirGrafo();
+    MostrarGrafo(G);
+    DestruirGrafo(G);
+}

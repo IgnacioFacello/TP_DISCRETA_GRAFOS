@@ -7,7 +7,7 @@
 
 
 //el .h de abajo debe tener definida GrafoSt y u32.
-#include "EstructuraGrafo23.h"
+#include "lib_grafos/EstructuraGrafo23.h"
 
 
 //Grafo es un puntero a una estructura GrafoSt, la cual debe estar definida en el .h de arriba
@@ -21,6 +21,7 @@ Grafo ConstruirGrafo();
 
 void DestruirGrafo(Grafo G);
 
+void MostrarGrafo(Grafo G);
 
 
 //funciones para extraer datos del grafo. u32 debe estar definida en el .h de arriba
