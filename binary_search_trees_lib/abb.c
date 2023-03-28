@@ -6,6 +6,8 @@
 
 struct _s_abb {
     abb_elem elem;
+    int balance;
+    struct _s_abb *parent;
     struct _s_abb *left;
     struct _s_abb *right;
 };
@@ -72,10 +74,33 @@ abb abb_empty(void) {
 
 static struct _s_abb *create_node(abb_elem e){
     struct _s_abb *new = malloc(sizeof(struct _s_abb));
+    new->balance = 0;
+    new->parent = NULL;
     new->left = NULL;
     new->right = NULL;
     new->elem = e;
     return new;
+}
+
+static void update_balance(abb e)
+{
+    if (e != NULL)
+    {
+        if (e->right == NULL && e->left == NULL )
+        {
+            e->balance = 0;
+        } else if (e->right == NULL)
+        {
+            e->balance = -(e->left)->balance - 1;
+        } else if (e->left == NULL)
+        {
+            e->balance = (e->right)->balance + 1;
+        } else
+        {
+            e->balance = (e->right)->balance - (e->left)->balance;
+        }    
+    update_balance(e->parent);
+    }
 }
 
 abb abb_add(abb tree, abb_elem e) {
@@ -91,8 +116,9 @@ abb abb_add(abb tree, abb_elem e) {
     }
     // * Create node            // * Add node
     if (q == NULL) { tree = create_node(e); }
-    else if (elem_right(q->elem,e)) { q->right = create_node(e); }
-    else if (elem_left(q->elem,e)) { q->left = create_node(e); }
+    else if (elem_right(q->elem,e)) { q->right = create_node(e); (q->right)->parent = q; }
+    else if (elem_left(q->elem,e)) { q->left = create_node(e); (q->left)->parent = q;}
+    update_balance(q);
     node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));
     return tree;
 }
@@ -238,7 +264,7 @@ abb_elem abb_min(abb tree) {
 void abb_dump(abb tree) {
     assert(invrep(tree));
     if (tree != NULL) {
-        printf("%u ", vertex_name(tree->elem));
+        printf("%u(%d) ", vertex_name(tree->elem),tree->balance);
         abb_dump(tree->left);
         abb_dump(tree->right);
     }
