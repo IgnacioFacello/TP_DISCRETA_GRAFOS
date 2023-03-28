@@ -20,31 +20,31 @@ static bool elem_eq(abb_elem v, abb_elem w){
 }
 
 /**
- * @brief Evaluate if element v is to the right of right.
+ * @brief Evaluate if element v is to the right of w.
 */
-static bool elem_right(abb_elem v, abb_elem right) {
-    return !vertex_eq(v,right) && vertex_lt(v,right); 
+static bool elem_right(abb_elem v, abb_elem w) {
+    return !vertex_eq(v,w) && vertex_lt(v,w); 
 }
 
 /**
- * @brief e != right && e < right
+ * @brief e != t && e < t
 */
-static bool nombre_right(u32 e, u32 right) {
-    return e != right && (e < right);
+static bool nombre_right(u32 e, u32 t) {
+    return e != t && (e < t);
 }
 
 /**
- * @brief Evaluate if element v is to the left of left.
+ * @brief Evaluate if element v is to the left of w.
 */
-static bool elem_left(abb_elem v, abb_elem left) {
-    return !vertex_eq(v,left) && vertex_gt(v,left); 
+static bool elem_left(abb_elem v, abb_elem w) {
+    return !vertex_eq(v,w) && vertex_gt(v,w); 
 }
 
 /**
- *  @brief e != left && e > left 
+ *  @brief e != t && e > t 
  */
-static bool nombre_left(u32 e, u32 left) {
-    return e != left && (e > left);
+static bool nombre_left(u32 e, u32 t) {
+    return e != t && (e > t);
 }
 
 /**
@@ -66,6 +66,8 @@ static bool invrep(abb tree) {
     return b;
 }
 
+/*==================================================================================================*/
+
 abb abb_empty(void) {
     abb tree = NULL;
     assert(invrep(tree) && abb_is_empty(tree));
@@ -86,6 +88,7 @@ static void update_balance(abb e)
 {
     if (e != NULL)
     {
+        printf("actualizando %u | ",vertex_name(e->elem));
         if (e->right == NULL && e->left == NULL )
         {
             e->balance = 0;
@@ -98,9 +101,95 @@ static void update_balance(abb e)
         } else
         {
             e->balance = (e->right)->balance - (e->left)->balance;
-        }    
-    update_balance(e->parent);
+        }   
+        printf("%d\n",e->balance);
+        update_balance(e->parent);
     }
+}
+
+static abb abb_rotate_l(abb tree)
+{
+    /**
+     * Switches X(tree) for its right child Z and balances the children
+     * PRE: X->balance >= 2 && Z->balance >= 0
+     */
+    abb Z = tree->right;
+    abb X = tree;
+
+    X->right = Z->left;
+    Z->left = X;
+
+    update_balance(X);
+    
+    return Z;
+    /**
+     * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
+     */
+}
+
+static abb abb_rotate_r(abb tree)
+{
+    /**
+     * Switches X(tree) for its left child Z and balances the children
+     * PRE: X->balance <= -2 && Z->balance >= 0
+     */
+    abb Z = tree->left;
+    abb X = tree;
+    
+    X->left = Z->right;
+    Z->right = X;
+
+    update_balance(X);
+    
+    return Z;
+    /**
+     * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
+     */
+}
+
+static abb abb_rotate_rl(abb tree)
+{
+    abb ret = tree;
+    /**
+     * PRE: X->balance >= 2 && Z->balance < 0
+     */
+    ret = abb_rotate_r(tree->right);
+    ret = abb_rotate_l(tree);
+    return ret;
+}
+
+static void abb_rotate_lr(abb tree)
+{
+    /**
+     * PRE: X->balance <= -2 && Z->balance > 0
+     */
+    abb_rotate_l(tree->left);
+    abb_rotate_r(tree);
+}
+
+static void abb_rebalance(abb tree)
+{
+    printf("rebalanceando %u(%d) |",vertex_name(tree->elem),tree->balance);
+    if (tree->balance >= 2) // tree is right-heavy
+    {
+        if ((tree->right)->balance >= 0) { // child is right heavy
+            printf(" left | ");
+            abb_rotate_l(tree);
+        } else if ((tree->right)->balance < 0){ // child is left heavy
+            printf(" leftRight | ");
+            abb_rotate_lr(tree);
+        }
+    }
+    else if(tree->balance <= -2) {    
+        if (tree->left->balance <= 0) {
+            printf(" right | ");
+            abb_rotate_r(tree);
+        } else if (tree->left->balance > 0) {
+            printf(" rightLeft | ");
+            abb_rotate_rl(tree);
+        }
+    }
+    printf("none\n");
 }
 
 abb abb_add(abb tree, abb_elem e) {
@@ -115,11 +204,11 @@ abb abb_add(abb tree, abb_elem e) {
         else if (elem_left(p->elem,e)) { q = p ; p = p->left; } // p > e ; go left
     }
     // * Create node            // * Add node
-    if (q == NULL) { tree = create_node(e); }
+    if (q == NULL) { tree = create_node(e); } // root node of empty tree
     else if (elem_right(q->elem,e)) { q->right = create_node(e); (q->right)->parent = q; }
     else if (elem_left(q->elem,e)) { q->left = create_node(e); (q->left)->parent = q;}
     update_balance(q);
-    node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));
+    node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));    
     return tree;
 }
 
