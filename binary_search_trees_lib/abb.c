@@ -92,18 +92,34 @@ static void update_balance(abb e)
         if (e->right == NULL && e->left == NULL )
         {
             e->balance = 0;
-        } else if (e->right == NULL)
+        } else if (e->right == NULL) // Child on the left
         {
             e->balance = -(e->left)->balance - 1;
-        } else if (e->left == NULL)
+        } else if (e->left == NULL) // Child on the right
         {
             e->balance = (e->right)->balance + 1;
-        } else
+        } else // Children on both sides
         {
             e->balance = (e->right)->balance - (e->left)->balance;
         }   
         printf("%d\n",e->balance);
-        update_balance(e->parent);
+        update_balance(e->parent); 
+    }
+}
+
+static void abb_reparent(abb X, abb P, abb Z)
+{
+    // Following code sets parents straight. Wish it did the same for mine
+    if (P != NULL) // P NULL implies X was root
+    {
+        if (elem_right(X->elem, P->elem)) // X was right child of P
+        {
+            P->right = Z;   // Z is now right child of P
+        } else
+        {
+            P->left = Z;    // else Z is now left child of P
+        }
+        Z->parent = P;
     }
 }
 
@@ -113,15 +129,30 @@ static abb abb_rotate_l(abb tree)
      * Switches X(tree) for its right child Z and balances the children
      * PRE: X->balance >= 2 && Z->balance >= 0
      */
-    abb Z = tree->right;
+
     abb X = tree;
+    abb P = NULL;
+    abb Z = tree;
 
-    X->right = Z->left;
-    Z->left = X;
+    if (X != NULL) {
+        P = X->parent;
+        Z = tree->right;
 
-    update_balance(X);
-    
-    return Z;
+        // Here be dragons
+        X->right = Z->left;
+        if(Z->left != NULL) 
+            (Z->left)->parent = X;
+        Z->left = X;
+        X->parent = Z;
+        Z->parent = NULL;
+        // End of dragons
+
+        abb_reparent(X,P,Z);
+
+        update_balance(X);
+    }
+
+    return Z; // Z is the new root of the tree 
     /**
      * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
      */
@@ -133,14 +164,27 @@ static abb abb_rotate_r(abb tree)
      * Switches X(tree) for its left child Z and balances the children
      * PRE: X->balance <= -2 && Z->balance >= 0
      */
-    abb Z = tree->left;
+    
     abb X = tree;
-    
-    X->left = Z->right;
-    Z->right = X;
+    abb P = NULL;
+    abb Z = tree;
 
-    update_balance(X);
-    
+    if (X != NULL) {
+        P = X->parent;
+        Z = tree->left;
+
+        X->left = Z->right;
+        if(Z->right != NULL) 
+            (Z->right)->parent = X;
+        X->parent = Z;
+        Z->right = X;
+        Z->parent = NULL;
+
+        abb_reparent(X,P,Z);
+
+        update_balance(X); 
+    }
+
     return Z;
     /**
      * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
@@ -149,47 +193,55 @@ static abb abb_rotate_r(abb tree)
 
 static abb abb_rotate_rl(abb tree)
 {
-    abb ret = tree;
     /**
      * PRE: X->balance >= 2 && Z->balance < 0
      */
-    ret = abb_rotate_r(tree->right);
-    ret = abb_rotate_l(tree);
-    return ret;
+    abb Z = tree;
+    Z = abb_rotate_r(tree->right); 
+    Z = abb_rotate_l(tree);
+    return Z;
 }
 
-static void abb_rotate_lr(abb tree)
+static abb abb_rotate_lr(abb tree)
 {
     /**
      * PRE: X->balance <= -2 && Z->balance > 0
      */
-    abb_rotate_l(tree->left);
-    abb_rotate_r(tree);
+    abb Z = tree;
+    Z = abb_rotate_l(tree->left);
+    Z = abb_rotate_r(tree);
+    return Z;
 }
 
-static void abb_rebalance(abb tree)
+static abb abb_rebalance(abb tree)
 {
-    printf("rebalanceando %u(%d) |",vertex_name(tree->elem),tree->balance);
-    if (tree->balance >= 2) // tree is right-heavy
+    abb Z = tree;
+
+    if(tree != NULL)
     {
-        if ((tree->right)->balance >= 0) { // child is right heavy
-            printf(" left | ");
-            abb_rotate_l(tree);
-        } else if ((tree->right)->balance < 0){ // child is left heavy
-            printf(" leftRight | ");
-            abb_rotate_lr(tree);
+        if (tree->balance >= 2) // Right heavy
+        {
+            if ((tree->right)->balance >= 0) 
+            { 
+                Z = abb_rotate_l(tree);
+            } else
+            { 
+                Z = abb_rotate_rl(tree); 
+            }
+        } else if (tree->balance <= -2) // Left heavy
+        {
+            if ((tree->left)->balance <= 0) 
+            {
+                Z = abb_rotate_r(tree);
+            } else
+            {
+                Z = abb_rotate_lr(tree);
+            }
         }
+        if (Z->parent != NULL) { Z = abb_rebalance(Z->parent); }// Rebalances until Root 
     }
-    else if(tree->balance <= -2) {    
-        if (tree->left->balance <= 0) {
-            printf(" right | ");
-            abb_rotate_r(tree);
-        } else if (tree->left->balance > 0) {
-            printf(" rightLeft | ");
-            abb_rotate_rl(tree);
-        }
-    }
-    printf("none\n");
+
+    return Z;
 }
 
 abb abb_add(abb tree, abb_elem e) {
@@ -197,17 +249,34 @@ abb abb_add(abb tree, abb_elem e) {
     // * Look for a place for the node 
     struct _s_abb *p = tree;
     struct _s_abb *q = tree;
-    while (p != NULL) /* p travel the three */
+    while (p != NULL) /* p travels the three */
     {
         if (elem_eq(p->elem, e)) { goto node_equal; }   // * Node already exists
         else if (elem_right(p->elem,e)) { q = p ; p = p->right; } // p < e ; go right //! Added else before if on copilot recommendation
         else if (elem_left(p->elem,e)) { q = p ; p = p->left; } // p > e ; go left
     }
-    // * Create node            // * Add node
-    if (q == NULL) { tree = create_node(e); } // root node of empty tree
-    else if (elem_right(q->elem,e)) { q->right = create_node(e); (q->right)->parent = q; }
-    else if (elem_left(q->elem,e)) { q->left = create_node(e); (q->left)->parent = q;}
-    update_balance(q);
+    // * Create node            
+    abb new_node = create_node(e);
+    // * Add node
+    if (q == NULL) 
+    { 
+        tree = new_node; 
+    } // root node of new tree
+    else if (elem_right(q->elem,e)) 
+    { 
+        q->right = new_node; 
+        new_node->parent = q;
+        update_balance(q);
+        tree = abb_rebalance(q);
+    }
+    else if (elem_left(q->elem,e)) 
+    { 
+        q->left = new_node;
+        new_node->parent = q;
+        update_balance(q);
+        tree = abb_rebalance(q);
+    }
+    
     node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));    
     return tree;
 }
