@@ -6,7 +6,7 @@
 
 struct _s_abb {
     abb_elem elem;
-    int balance;
+    int height;
     struct _s_abb *parent;
     struct _s_abb *left;
     struct _s_abb *right;
@@ -20,31 +20,31 @@ static bool elem_eq(abb_elem v, abb_elem w){
 }
 
 /**
- * @brief Evaluate if element v is to the right of w.
+ * @brief Evaluate if element v is to the right of right.
 */
-static bool elem_right(abb_elem v, abb_elem w) {
-    return !vertex_eq(v,w) && vertex_lt(v,w); 
+static bool elem_right(abb_elem v, abb_elem right) {
+    return !vertex_eq(v,right) && vertex_lt(v,right); 
 }
 
 /**
- * @brief e != t && e < t
+ * @brief e != right && e < right
 */
-static bool nombre_right(u32 e, u32 t) {
-    return e != t && (e < t);
+static bool nombre_right(u32 e, u32 right) {
+    return e != right && (e < right);
 }
 
 /**
- * @brief Evaluate if element v is to the left of w.
+ * @brief Evaluate if element v is to the left of left.
 */
-static bool elem_left(abb_elem v, abb_elem w) {
-    return !vertex_eq(v,w) && vertex_gt(v,w); 
+static bool elem_left(abb_elem v, abb_elem left) {
+    return !vertex_eq(v,left) && vertex_gt(v,left); 
 }
 
 /**
- *  @brief e != t && e > t 
+ *  @brief e != left && e > left 
  */
-static bool nombre_left(u32 e, u32 t) {
-    return e != t && (e > t);
+static bool nombre_left(u32 e, u32 left) {
+    return e != left && (e > left);
 }
 
 /**
@@ -66,7 +66,7 @@ static bool invrep(abb tree) {
     return b;
 }
 
-/*==================================================================================================*/
+/* ================================================================================================= */
 
 abb abb_empty(void) {
     abb tree = NULL;
@@ -76,36 +76,42 @@ abb abb_empty(void) {
 
 static struct _s_abb *create_node(abb_elem e){
     struct _s_abb *new = malloc(sizeof(struct _s_abb));
-    new->balance = 0;
     new->parent = NULL;
+    new->height = 0;
     new->left = NULL;
     new->right = NULL;
     new->elem = e;
     return new;
 }
 
-static void update_balance(abb e)
+static int balance(abb tree)
 {
-    if (e != NULL)
+    int ret = 0;
+    if (tree != NULL) 
     {
-        printf("actualizando %u | ",vertex_name(e->elem));
-        if (e->right == NULL && e->left == NULL )
-        {
-            e->balance = 0;
-        } else if (e->right == NULL) // Child on the left
-        {
-            e->balance = -(e->left)->balance - 1;
-        } else if (e->left == NULL) // Child on the right
-        {
-            e->balance = (e->right)->balance + 1;
-        } else // Children on both sides
-        {
-            e->balance = (e->right)->balance - (e->left)->balance;
-        }   
-        printf("%d\n",e->balance);
-        update_balance(e->parent); 
+        ret = 
+        (tree->right != NULL ? (tree->right)->height : 0) - 
+        (tree->left != NULL ? (tree->left)->height : 0)    ;
+    }
+    return ret;
+}
+
+static int max_height(int a, int b)
+{
+    return (a > b ? a : b);
+}
+
+static void update_height(abb tree)
+{
+    if (tree != NULL)
+    {
+        tree->height = max_height( (tree->right != NULL ? (tree->right)->height : 0), 
+                            (tree->left != NULL ? (tree->left)->height : 0)) + 1;
+        update_height(tree->parent);
     }
 }
+
+/*============================================REBALANCING OPERATIONS============================================*/
 
 static void abb_reparent(abb X, abb P, abb Z)
 {
@@ -123,161 +129,128 @@ static void abb_reparent(abb X, abb P, abb Z)
     }
 }
 
-static abb abb_rotate_l(abb tree)
+static abb rotate_left(abb tree)
 {
     /**
-     * Switches X(tree) for its right child Z and balances the children
-     * PRE: X->balance >= 2 && Z->balance >= 0
-     */
+     * @brief Rotate the tree to the left.
+     * PRE: tree balance > 1 && (tree->right) balance >= 0
+    */
+    abb X = tree; // original root
+    abb Z = tree; // new root
+    if (tree != NULL)
+    {
+        abb P = tree->parent;
+        Z = tree->right; 
 
-    abb X = tree;
-    abb P = NULL;
-    abb Z = tree;
-
-    if (X != NULL) {
-        P = X->parent;
-        Z = tree->right;
-
-        // Here be dragons
         X->right = Z->left;
-        if(Z->left != NULL) 
+        if(Z->left != NULL)
             (Z->left)->parent = X;
+
         Z->left = X;
         X->parent = Z;
+
         Z->parent = NULL;
-        // End of dragons
-
-        abb_reparent(X,P,Z);
-
-        update_balance(X);
+        abb_reparent(X, P, Z);
+        update_height(X);
     }
-
-    return Z; // Z is the new root of the tree 
-    /**
-     * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
-     */
+    return Z;
 }
 
-static abb abb_rotate_r(abb tree)
+static abb rotate_right(abb tree)
 {
     /**
-     * Switches X(tree) for its left child Z and balances the children
-     * PRE: X->balance <= -2 && Z->balance >= 0
-     */
-    
-    abb X = tree;
-    abb P = NULL;
-    abb Z = tree;
-
-    if (X != NULL) {
-        P = X->parent;
-        Z = tree->left;
+     * @brief Rotate the tree to the right.
+     * PRE: tree balance < -1 && (tree->left) balance <= 0
+    */
+    abb X = tree; // original root
+    abb Z = tree; // new root
+    if (tree != NULL)
+    {
+        abb P = tree->parent;
+        Z = tree->left; 
 
         X->left = Z->right;
-        if(Z->right != NULL) 
+        if(Z->right != NULL)
             (Z->right)->parent = X;
-        X->parent = Z;
+
         Z->right = X;
+        X->parent = Z;
+
         Z->parent = NULL;
-
-        abb_reparent(X,P,Z);
-
-        update_balance(X); 
+        abb_reparent(X, P, Z);
+        update_height(X);
     }
-
-    return Z;
-    /**
-     * POST: abs(X->balance) < 2 && abs(Z->balance) < 2 
-     */
-}
-
-static abb abb_rotate_rl(abb tree)
-{
-    /**
-     * PRE: X->balance >= 2 && Z->balance < 0
-     */
-    abb Z = tree;
-    Z = abb_rotate_r(tree->right); 
-    Z = abb_rotate_l(tree);
-    return Z;
-}
-
-static abb abb_rotate_lr(abb tree)
-{
-    /**
-     * PRE: X->balance <= -2 && Z->balance > 0
-     */
-    abb Z = tree;
-    Z = abb_rotate_l(tree->left);
-    Z = abb_rotate_r(tree);
     return Z;
 }
 
 static abb abb_rebalance(abb tree)
 {
+    /**
+    * @brief Rebalance the tree and all nodes above it. 
+    */
     abb Z = tree;
-
-    if(tree != NULL)
+    if (tree != NULL)
     {
-        if (tree->balance >= 2) // Right heavy
+        if (balance(tree) > 1) // Right heavy
         {
-            if ((tree->right)->balance >= 0) 
-            { 
-                Z = abb_rotate_l(tree);
+            if (balance(tree->right) >= 0)
+            {
+                Z = rotate_left(tree);
             } else
-            { 
-                Z = abb_rotate_rl(tree); 
+            {
+                rotate_right(tree->right);
+                Z = rotate_left(tree);
             }
-        } else if (tree->balance <= -2) // Left heavy
+        } else if (balance(tree) < -1) // Left heavy
         {
-            if ((tree->left)->balance <= 0) 
+            if (balance(tree->left) <= 0)
             {
-                Z = abb_rotate_r(tree);
+                Z = rotate_right(tree);
             } else
             {
-                Z = abb_rotate_lr(tree);
+                rotate_left(tree->left);
+                Z = rotate_right(tree);
             }
         }
-        if (Z->parent != NULL) { Z = abb_rebalance(Z->parent); }// Rebalances until Root 
+        if(tree->parent != NULL)
+            Z = abb_rebalance(tree->parent);
     }
-
     return Z;
 }
+
+/*==============================================================================================================*/
 
 abb abb_add(abb tree, abb_elem e) {
     assert(invrep(tree));
     // * Look for a place for the node 
     struct _s_abb *p = tree;
     struct _s_abb *q = tree;
-    while (p != NULL) /* p travels the three */
+    while (p != NULL) /* p travel the three */
     {
         if (elem_eq(p->elem, e)) { goto node_equal; }   // * Node already exists
         else if (elem_right(p->elem,e)) { q = p ; p = p->right; } // p < e ; go right //! Added else before if on copilot recommendation
         else if (elem_left(p->elem,e)) { q = p ; p = p->left; } // p > e ; go left
     }
     // * Create node            
-    abb new_node = create_node(e);
+    abb new = create_node(e);
     // * Add node
     if (q == NULL) 
     { 
-        tree = new_node; 
-    } // root node of new tree
+        tree = new; 
+    }
     else if (elem_right(q->elem,e)) 
     { 
-        q->right = new_node; 
-        new_node->parent = q;
-        update_balance(q);
-        tree = abb_rebalance(q);
+        q->right = new; 
+        new->parent = q;
     }
     else if (elem_left(q->elem,e)) 
     { 
-        q->left = new_node;
-        new_node->parent = q;
-        update_balance(q);
-        tree = abb_rebalance(q);
+        q->left = new; 
+        new->parent = q;
     }
-    
-    node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));    
+    update_height(new);
+    tree = abb_rebalance(new);
+    node_equal: assert(invrep(tree) && abb_exists(tree, vertex_name(e)));
     return tree;
 }
 
@@ -378,6 +351,7 @@ abb abb_remove(abb tree, u32 e) {
             free(p);
         }
     }
+    update_height(q);
     // * Remove / Clean up
     end: assert(invrep(tree) && !abb_exists(tree, e));
     return tree;
@@ -422,7 +396,7 @@ abb_elem abb_min(abb tree) {
 void abb_dump(abb tree) {
     assert(invrep(tree));
     if (tree != NULL) {
-        printf("%u(%d) ", vertex_name(tree->elem),tree->balance);
+        printf("%u(%d) ", vertex_name(tree->elem),balance(tree));
         abb_dump(tree->left);
         abb_dump(tree->right);
     }
