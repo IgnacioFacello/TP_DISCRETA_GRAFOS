@@ -73,7 +73,6 @@ int main(int argc, char *argv[]) {
 
     //system("clear");
     printf("-------------------------------------------------------------------------------\n");
-selection:
     printf(
     " * 1 ........ Mostrar árbol por pantalla\n"
     " * 2 ........ Agregar un elemento\n"
@@ -83,6 +82,8 @@ selection:
     " * 6 ........ Mostrar raiz, máximo y mínimo del árbol\n"
     " * 7 ........ Mostrar array ordenado de menor a mayor\n"
     " * 8 ........ Salir\n");
+selection:
+    printf("\n");
     int ret = 0;
     unsigned int choice;
     while ( ret != 1 )

@@ -120,10 +120,10 @@ static void abb_reparent(abb X, abb P, abb Z)
     {
         if (elem_right(X->elem, P->elem)) // X was right child of P
         {
-            P->right = Z;   // Z is now right child of P
+            P->left = Z;   // Z is now right child of P
         } else
         {
-            P->left = Z;    // else Z is now left child of P
+            P->right = Z;    // else Z is now left child of P
         }
         Z->parent = P;
     }
@@ -198,7 +198,7 @@ static abb abb_rebalance(abb tree)
                 Z = rotate_left(tree);
             } else
             {
-                rotate_right(tree->right);
+                tree->right = rotate_right(tree->right);
                 Z = rotate_left(tree);
             }
         } else if (balance(tree) < -1) // Left heavy
@@ -397,8 +397,20 @@ void abb_dump(abb tree) {
     assert(invrep(tree));
     if (tree != NULL) {
         printf("%u(%d) ", vertex_name(tree->elem),balance(tree));
-        abb_dump(tree->left);
-        abb_dump(tree->right);
+        if (tree->left != NULL)
+        {
+            printf("L: ");
+            abb_dump(tree->left);
+        }   else {
+            printf("L: N ");
+        }
+        if (tree->right != NULL)
+        {
+            printf("R: ");
+            abb_dump(tree->right);
+        }   else {
+            printf("R: N ");
+        }
     }
 }
 
