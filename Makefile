@@ -16,3 +16,6 @@ $(TARGET): $(OBJECTS)
 
 clean:
 	$(RM) $(OBJECTS) $(TARGET)
+
+test: $(TARGET)
+	(for file in Grafos/* ; do (echo "$$file" ; ./reader < "$$file") ; done) > tests/test.txt

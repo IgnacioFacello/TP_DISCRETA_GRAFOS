@@ -109,9 +109,11 @@ u32 IndiceVecino(u32 j, u32 i, Grafo G) {
 }
 
 void MostrarGrafo (Grafo G) {
+    /*
     for (unsigned int i = 0; i < G->vertex_numbers; i++) {
         printf("%u ", Nombre(i, G));
     }
+    */
     printf("\n");
     printf("Delta: %u \n", Delta(G));
 }
