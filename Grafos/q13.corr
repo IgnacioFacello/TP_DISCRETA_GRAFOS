@@ -5,6 +5,7 @@ c  FILE: queen13_13.col
 c  Translated from Stanford GraphBase File: queen13_13.gb
 c  Stanford GraphBase ID: gunion(board(13,13,0,0,-1,0,0),
 c board(13,13,0,0,-2,0,0),0,0)
+c 
 p edge 169 3328
 e 1 2
 e 1 3

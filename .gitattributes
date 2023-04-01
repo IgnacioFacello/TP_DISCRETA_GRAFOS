@@ -1,0 +1,7 @@
+Grafos/R1999999_10123123_1 filter=lfs diff=lfs merge=lfs -text
+Grafos/8suPGJ.txt filter=lfs diff=lfs merge=lfs -text
+Grafos/largecomplex4.txt filter=lfs diff=lfs merge=lfs -text
+Grafos/BxB1100_999_54_2017 filter=lfs diff=lfs merge=lfs -text
+Grafos/Harkon.txt filter=lfs diff=lfs merge=lfs -text
+Grafos/R1999999_10123123_1_unsorted.txt filter=lfs diff=lfs merge=lfs -text
+Grafos/Gf12345_12111222_457_15 filter=lfs diff=lfs merge=lfs -text
