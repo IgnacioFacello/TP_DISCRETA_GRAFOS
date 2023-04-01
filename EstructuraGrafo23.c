@@ -4,11 +4,11 @@
 
 struct vertex_st
 {
-    u32 name;            // Contenido del vértice
-    u32 grade;     // Grado del vértice
+    u32 name;  // Contenido del vértice
+    u32 grade; // Grado del vértice
     u32 cap;
-    u32 index; 
-    vertex *neighbors;    // Arreglo de punteros a vecinos
+    u32 index;
+    vertex *neighbors; // Arreglo de punteros a vecinos
 };
 
 vertex vertex_create(u32 name)

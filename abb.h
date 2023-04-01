@@ -4,10 +4,10 @@
 #include <stdbool.h>
 #include "EstructuraGrafo23.h"
 
-/** @brief Binary Search Tree. Lower elements are in the left branch, 
+/** @brief Binary Search Tree. Lower elements are in the left branch,
  * higher ones are in the right branch.
  */
-typedef struct _s_abb * abb;
+typedef struct _s_abb *abb;
 
 typedef vertex abb_elem;
 
@@ -91,17 +91,17 @@ void abb_dump(abb tree);
  *     abb_dump(tree);
  */
 
-abb_elem* abb_mintomax_array(abb tree, u32 tree_length);
+abb_elem *abb_mintomax_array(abb tree, u32 tree_length);
 /**
  * DESC: Returns an array with the elements of the tree, ordered from min to max.
- * 
+ *
  * PRE : {tree --> ABB}
-*/
+ */
 
-abb_elem* abb_freearray(abb_elem* array);
+abb_elem *abb_freearray(abb_elem *array);
 /**
  * DESC: Frees the memory allocated for the array.
-*/
+ */
 
 abb abb_destroy(abb tree);
 /* DESC: Destroy the given tree, freeing all the allocated resources.

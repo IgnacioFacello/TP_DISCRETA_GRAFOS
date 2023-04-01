@@ -4,31 +4,30 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//el .h de abajo debe tener definida GrafoSt y u32.
+// el .h de abajo debe tener definida GrafoSt y u32.
 #include "EstructuraGrafo23.h"
 
-//Grafo es un puntero a una estructura GrafoSt, la cual debe estar definida en el .h de arriba
+// Grafo es un puntero a una estructura GrafoSt, la cual debe estar definida en el .h de arriba
 
-typedef struct GrafoSt * Grafo;
+typedef GrafoSt *Grafo;
 
-//debe leer desde stdin
+// construcci'on/destrucci'on
+
+// debe leer desde stdin
 Grafo ConstruirGrafo();
 
-//debe liberar toda la memoria dinamica
 void DestruirGrafo(Grafo G);
 
-//funciones para extraer datos del grafo. u32 debe estar definida en el .h de arriba
+// funciones para extraer datos del grafo. u32 debe estar definida en el .h de arriba
 
 u32 NumeroDeVertices(Grafo G);
 u32 NumeroDeLados(Grafo G);
 u32 Delta(Grafo G);
 
-
-//funciones de extraccion de informacion de vertices 
+// funciones de extraccion de informacion de vertices
 
 u32 Nombre(u32 i, Grafo G);
 u32 Grado(u32 i, Grafo G);
 u32 IndiceVecino(u32 j, u32 i, Grafo G);
-
 
 #endif
