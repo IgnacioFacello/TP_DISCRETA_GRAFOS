@@ -4,10 +4,10 @@
 
 struct vertex_st
 {
-    u32 name;  // Contenido del vértice
-    u32 grade; // Grado del vértice
-    u32 cap;
-    u32 index;
+    u32 name;          // Contenido del vértice
+    u32 grade;         // Grado del vértice
+    u32 cap;           // Capacidad del arreglo de vecinos
+    u32 index;         // Índice del vértice en el arreglo de vértices
     vertex *neighbors; // Arreglo de punteros a vecinos
 };
 

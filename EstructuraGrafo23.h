@@ -8,10 +8,10 @@ typedef struct vertex_st *vertex;
 
 struct GrafoSt
 {
-    u32 vertex_numbers;
-    u32 edge_numbers;
-    u32 delta;
-    vertex *vertexs;
+    u32 vertex_numbers; // total number of vertexes
+    u32 edge_numbers;   // total number of edges
+    u32 delta;          // maximum degree
+    vertex *vertexes;    // array of vertexes
 };
 
 typedef struct GrafoSt GrafoSt;
@@ -21,8 +21,14 @@ typedef struct GrafoSt GrafoSt;
  */
 vertex vertex_create(u32 e);
 
+/**
+ * @brief Sets the index of the given vertex.
+ */
 vertex vertex_set_index(vertex v, u32 index);
 
+/**
+ * @brief Returns the index of the given vertex.
+ */
 u32 vertex_index(vertex v);
 
 /**

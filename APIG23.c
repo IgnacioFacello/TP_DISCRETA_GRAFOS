@@ -66,7 +66,7 @@ Grafo ConstruirGrafo()
     }
 
     // Loading Tree to Array
-    G->vertexs = abb_mintomax_array(tree, G->vertex_numbers);
+    G->vertexes = abb_mintomax_array(tree, G->vertex_numbers);
     abb_destroy(tree);
 
     // If the number of edges is not the same as the number of edges read, the graph is not valid.
@@ -82,9 +82,9 @@ void DestruirGrafo(Grafo G)
 {
     for (u32 i = 0; i < G->vertex_numbers; i++)
     {
-        G->vertexs[i] = vertex_destroy(G->vertexs[i]);
+        G->vertexes[i] = vertex_destroy(G->vertexes[i]);
     }
-    free(G->vertexs);
+    free(G->vertexes);
     free(G);
     G = NULL;
 }
@@ -106,7 +106,7 @@ u32 Delta(Grafo G)
 
 u32 Nombre(u32 i, Grafo G)
 {
-    return vertex_name(G->vertexs[i]);
+    return vertex_name(G->vertexes[i]);
 }
 
 u32 Grado(u32 i, Grafo G)
@@ -115,7 +115,7 @@ u32 Grado(u32 i, Grafo G)
     {
         return -1;
     }
-    return vertex_grade(G->vertexs[i]);
+    return vertex_grade(G->vertexes[i]);
 }
 
 u32 IndiceVecino(u32 j, u32 i, Grafo G)
@@ -124,7 +124,7 @@ u32 IndiceVecino(u32 j, u32 i, Grafo G)
     {
         return -1;
     }
-    vertex input1 = G->vertexs[i];
+    vertex input1 = G->vertexes[i];
     if (j >= vertex_grade(input1))
     {
         return -1;
