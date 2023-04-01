@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "abb.h" /* TAD abb */
-#include "../lib_grafos/EstructuraGrafo23.h" /* TAD vertice */
+#include "../abb.h" /* TAD abb */
+#include "../EstructuraGrafo23.h" /* TAD vertice */
 
 
 void print_help(char *program_name) {
@@ -37,8 +37,8 @@ abb abb_from_file(const char *filepath) {
         fprintf(stderr, "File does not exist.\n");
         exit(EXIT_FAILURE);
     }
-    unsigned int i = 0u;
-    unsigned int size = 0u;
+    u32 i = 0u;
+    u32 size = 0u;
     int res = 0;
     res = fscanf(file, " %u ", &size);
     if (res != 1) {
@@ -63,7 +63,7 @@ abb abb_from_file(const char *filepath) {
 int main(int argc, char *argv[]) {
     char *filepath = NULL;
     abb_elem *array;
-    unsigned int array_size;
+    u32 array_size;
 
     /* parse the filepath given in command line arguments */
     filepath = parse_filepath(argc, argv);
@@ -85,7 +85,7 @@ int main(int argc, char *argv[]) {
 selection:
     printf("\n");
     int ret = 0;
-    unsigned int choice;
+    u32 choice;
     while ( ret != 1 )
     {
         printf("Elija: ");
@@ -167,7 +167,7 @@ selection:
             array_size = abb_length(tree);
             array = abb_mintomax_array(tree, array_size);
             printf("[ ");
-            for (unsigned int i = 0; i < array_size; i++)
+            for (u32 i = 0; i < array_size; i++)
                 {
                     printf("%u", vertex_name(array[i]));
                     if (i<array_size-1)
@@ -186,7 +186,7 @@ selection:
     printf("\nGrafo final: \n[ ");
     array_size = abb_length(tree);
     array = abb_mintomax_array(tree, array_size);
-    for (unsigned int i = 0; i < array_size; i++)
+    for (u32 i = 0; i < array_size; i++)
         {
             printf("%u", vertex_name(array[i]));
             if (i<array_size-1)

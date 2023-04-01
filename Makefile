@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -DNDEBUG -pedantic -std=c99 -g
-SOURCES = APIG23.c main.c binary_search_trees_lib/abb.c lib_grafos/EstructuraGrafo23.c
+CFLAGS = -Wall -Wextra -O3 -DNDEBUG  -pedantic -std=c99 -g
+SOURCES = APIG23.c main.c abb.c EstructuraGrafo23.c
 OBJECTS = $(SOURCES:.c=.o)
 TARGET = reader
 

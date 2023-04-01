@@ -2,7 +2,7 @@
 #define _ABB_H
 
 #include <stdbool.h>
-#include "../lib_grafos/EstructuraGrafo23.h"
+#include "EstructuraGrafo23.h"
 
 /** @brief Binary Search Tree. Lower elements are in the left branch, 
  * higher ones are in the right branch.
@@ -43,7 +43,7 @@ vertex abb_exists(abb tree, u32 e);
  *     exists = abb_exists(tree, e);
  */
 
-unsigned int abb_length(abb tree);
+u32 abb_length(abb tree);
 /* DESC: Returns the number of elements in the tree
  *
  * PRE : {tree --> ABB}
@@ -91,7 +91,7 @@ void abb_dump(abb tree);
  *     abb_dump(tree);
  */
 
-abb_elem* abb_mintomax_array(abb tree, unsigned int tree_length);
+abb_elem* abb_mintomax_array(abb tree, u32 tree_length);
 /**
  * DESC: Returns an array with the elements of the tree, ordered from min to max.
  * 

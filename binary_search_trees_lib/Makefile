@@ -1,6 +1,6 @@
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -g
-SOURCES = ../lib_grafos/EstructuraGrafo23.c abb.c test.c
+CFLAGS = -Wall -Wextra -pedantic -std=c99 -g
+SOURCES = abb.c test.c
 OBJECTS = $(SOURCES:.c=.o)
 TARGET = readtree
 

@@ -18,7 +18,7 @@ u32 vertex_index(vertex v);
 /**
  * @brief Returns the number of neighbors of the given vertex.
 */
-unsigned int vertex_grade(vertex v);
+u32 vertex_grade(vertex v);
 
 /**
  * @brief Returns the name of the given vertex.
@@ -28,7 +28,7 @@ u32 vertex_name(vertex v);
 /**
  * @brief Returns the i-th neighbor of the given vertex.
 */
-vertex vertex_neighbor(vertex v, unsigned int i);
+vertex vertex_neighbor(vertex v, u32 i);
 
 /**
  * @brief Returns true if both vertexes have the same name.
