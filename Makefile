@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -DNDEBUG  -pedantic -std=c99 -g
+CFLAGS = -Wall -Wextra -O3 -DNDEBUG -std=c99 -g
 SOURCES = APIG23.c main.c abb.c EstructuraGrafo23.c
 OBJECTS = $(SOURCES:.c=.o)
 TARGET = reader
