@@ -1,0 +1,18 @@
+#include "EstructuraGrafo23.h"
+
+struct tuple_st {
+    u32 index;
+    u32 color;
+};
+
+typedef struct tuple_st * tuple;
+
+tuple tupleCreate(u32 index, u32 color);
+
+u32 tupleIndex(tuple t);
+
+u32 tupleColor(tuple t);
+
+tuple tupleDestroy(tuple t);
+
+int tupleCompare(tuple t1, tuple t2);

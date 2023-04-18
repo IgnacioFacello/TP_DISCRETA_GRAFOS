@@ -28,25 +28,25 @@ Grafo ConstruirGrafo()
     }
 
     // Loading Graph to Tree
-    abb tree = abb_empty();
+    abb tree = abbU32_empty();
     u32 i = 0;
     u32 input1 = 0, input2 = 0;
     vertex vertexA = NULL, vertexB = NULL;
 
     while (fscanf(stdin, "e %u %u\n", &input1, &input2) && i < G->edge_numbers)
     {
-        vertexA = abb_exists(tree, input1);
+        vertexA = abbU32_exists(tree, input1);
         if (vertexA == NULL)
         {
             vertexA = vertex_create(input1);
-            tree = abb_add(tree, vertexA);
+            tree = abbU32_add(tree, vertexA);
         }
 
-        vertexB = abb_exists(tree, input2);
+        vertexB = abbU32_exists(tree, input2);
         if (vertexB == NULL)
         {
             vertexB = vertex_create(input2);
-            tree = abb_add(tree, vertexB);
+            tree = abbU32_add(tree, vertexB);
         }
 
         vertex_new_neighbor(vertexA, vertexB);
@@ -67,7 +67,7 @@ Grafo ConstruirGrafo()
 
     // Loading Tree to Array
     G->vertexes = abb_mintomax_array(tree, G->vertex_numbers);
-    abb_destroy(tree);
+    abbU32_destroy(tree);
 
     // If the number of edges is not the same as the number of edges read, the graph is not valid.
     if (i != G->edge_numbers)

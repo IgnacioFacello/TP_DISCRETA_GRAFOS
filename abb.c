@@ -81,10 +81,10 @@ static bool invrep(abb tree)
 
 /* ================================================================================================= */
 
-abb abb_empty(void)
+abb abbU32_empty(void)
 {
     abb tree = NULL;
-    assert(invrep(tree) && abb_is_empty(tree));
+    assert(invrep(tree) && abbU32_is_empty(tree));
     return tree;
 }
 
@@ -240,7 +240,7 @@ static abb abb_rebalance(abb tree)
 
 /*==============================================================================================================*/
 
-abb abb_add(abb tree, abb_elem e)
+abb abbU32_add(abb tree, abb_elem e)
 {
     assert(invrep(tree));
     // * Look for a place for the node
@@ -283,17 +283,17 @@ abb abb_add(abb tree, abb_elem e)
     update_height(new);
     tree = abb_rebalance(new);
 node_equal:
-    assert(invrep(tree) && abb_exists(tree, vertex_name(e)));
+    assert(invrep(tree) && abbU32_exists(tree, vertex_name(e)));
     return tree;
 }
 
-bool abb_is_empty(abb tree)
+bool abbU32_is_empty(abb tree)
 {
     assert(invrep(tree));
     return tree == NULL;
 }
 
-vertex abb_exists(abb tree, u32 e)
+vertex abbU32_exists(abb tree, u32 e)
 {
     bool exists = false;
     assert(invrep(tree));
@@ -318,7 +318,7 @@ vertex abb_exists(abb tree, u32 e)
     return ret;
 }
 
-u32 abb_length(abb tree)
+u32 abbU32_length(abb tree)
 {
     u32 length = 0;
     assert(invrep(tree));
@@ -327,14 +327,14 @@ u32 abb_length(abb tree)
             ++length;
             if (tree->left != NULL)
             {
-                length += abb_length(tree->left);
+                length += abbU32_length(tree->left);
             }
             if (tree->right != NULL)
             {
-                length += abb_length(tree->right);
+                length += abbU32_length(tree->right);
             }
     }
-    assert(invrep(tree) && (abb_is_empty(tree) || length > 0));
+    assert(invrep(tree) && (abbU32_is_empty(tree) || length > 0));
     return length;
 }
 
@@ -370,7 +370,7 @@ static struct _s_abb *find_replacement(abb tree)
     return rep;
 }
 
-abb abb_remove(abb tree, u32 e)
+abb abbU32_remove(abb tree, u32 e)
 {
     assert(invrep(tree));
     // * Find node
@@ -411,7 +411,7 @@ abb abb_remove(abb tree, u32 e)
     else if (rep->left == NULL && rep->right == NULL)
     { // * rep is leaf
             abb_elem rep_elem = rep->elem;
-            tree = abb_remove(tree, vertex_name(rep->elem));
+            tree = abbU32_remove(tree, vertex_name(rep->elem));
             p->elem = rep_elem;
             // * Replace element(p->elem = rep->elem) and erase leaf(rep)
     }
@@ -439,23 +439,23 @@ abb abb_remove(abb tree, u32 e)
     update_height(q);
 // * Remove / Clean up
 end:
-    assert(invrep(tree) && !abb_exists(tree, e));
+    assert(invrep(tree) && !abbU32_exists(tree, e));
     return tree;
 }
 
-abb_elem abb_root(abb tree)
+abb_elem abbU32_root(abb tree)
 {
     abb_elem root;
-    assert(invrep(tree) && !abb_is_empty(tree));
+    assert(invrep(tree) && !abbU32_is_empty(tree));
     root = tree->elem;
-    assert(abb_exists(tree, vertex_name(root)));
+    assert(abbU32_exists(tree, vertex_name(root)));
     return root;
 }
 
-abb_elem abb_max(abb tree)
+abb_elem abbU32_max(abb tree)
 {
     vertex max_e;
-    assert(invrep(tree) && !abb_is_empty(tree));
+    assert(invrep(tree) && !abbU32_is_empty(tree));
     max_e = tree->elem;
     struct _s_abb *p = tree;
     while (p->right != NULL)
@@ -463,14 +463,14 @@ abb_elem abb_max(abb tree)
             p = p->right;
             max_e = p->elem;
     }
-    assert(invrep(tree) && abb_exists(tree, vertex_name(max_e)));
+    assert(invrep(tree) && abbU32_exists(tree, vertex_name(max_e)));
     return max_e;
 }
 
-abb_elem abb_min(abb tree)
+abb_elem abbU32_min(abb tree)
 {
     vertex min_e;
-    assert(invrep(tree) && !abb_is_empty(tree));
+    assert(invrep(tree) && !abbU32_is_empty(tree));
     min_e = tree->elem;
     struct _s_abb *p = tree;
     while (p->left != NULL)
@@ -478,11 +478,11 @@ abb_elem abb_min(abb tree)
             p = p->left;
             min_e = p->elem;
     }
-    assert(invrep(tree) && abb_exists(tree, vertex_name(min_e)));
+    assert(invrep(tree) && abbU32_exists(tree, vertex_name(min_e)));
     return min_e;
 }
 
-void abb_dump(abb tree)
+void abbU32_dump(abb tree)
 {
     assert(invrep(tree));
     if (tree != NULL)
@@ -491,7 +491,7 @@ void abb_dump(abb tree)
             if (tree->left != NULL)
             {
                 printf("L: ");
-                abb_dump(tree->left);
+                abbU32_dump(tree->left);
             }
             else
             {
@@ -500,7 +500,7 @@ void abb_dump(abb tree)
             if (tree->right != NULL)
             {
                 printf("R: ");
-                abb_dump(tree->right);
+                abbU32_dump(tree->right);
             }
             else
             {
@@ -533,7 +533,7 @@ static void abb_mintomax_array_rec(abb tree, abb_elem *array, u32 *counter)
 /**
  * @brief Returns an array with the elements of the tree, ordered from min to max.
  * @param tree
- * @param tree_length Number of elements of the tree. Obtained by calling abb_length(tree)
+ * @param tree_length Number of elements of the tree. Obtained by calling abbU32_length(tree)
  */
 abb_elem *abb_mintomax_array(abb tree, u32 tree_length)
 {
@@ -557,13 +557,13 @@ abb_elem *abb_freearray(abb_elem *array)
 /**
  * @brief Frees the memory allocated by the tree structure, leaves all elements alocated.
  */
-abb abb_destroy(abb tree)
+abb abbU32_destroy(abb tree)
 {
     assert(invrep(tree));
-    if (!abb_is_empty(tree))
+    if (!abbU32_is_empty(tree))
     {
-            tree->left = abb_destroy(tree->left);   /*destroy left branch*/
-            tree->right = abb_destroy(tree->right); /*destroy right branch*/
+            tree->left = abbU32_destroy(tree->left);   /*destroy left branch*/
+            tree->right = abbU32_destroy(tree->right); /*destroy right branch*/
             free(tree);                             /*destroy root branch*/
             tree = NULL;
     }

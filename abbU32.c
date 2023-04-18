@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
-#include "abb.h"
+#include "abbU32.h"
 
 struct _s_abb {
     abb_elem elem;

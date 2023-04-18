@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O3 -DNDEBUG  -pedantic -std=c99 -g
-SOURCES = APIG23.c main.c abb.c EstructuraGrafo23.c
+CFLAGS = -Wall -O3 -DNDEBUG -pedantic -std=c99 -g
+SOURCES = APIParte2.c APIG23.c main.c abb.c EstructuraGrafo23.c abbU32.c tuple.c
 OBJECTS = $(SOURCES:.c=.o)
-TARGET = reader
+TARGET = greedy
 
 .PHONY: clean
 
@@ -18,4 +18,4 @@ clean:
 	$(RM) $(OBJECTS) $(TARGET)
 
 test: $(TARGET)
-	(for file in Grafos/* ; do (echo "$$file" ; ./reader < "$$file") ; done) > tests/test.txt
+	(for file in Grafos/* ; do (echo "$$file" ; ./greedy < "$$file") ; done) > tests/test.txt
