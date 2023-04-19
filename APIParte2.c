@@ -63,7 +63,7 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
     tuple * tuplas = malloc(sizeof(tuple) * n);
     for (u32 i = 0; i < n; i++)
     {
-        tuplas[i] = tupleCreate(i, Color[i]);
+        tuplas[i] = tupleSet(i, Color[i]);
     }
 
     qsort(tuplas, n, sizeof(tuple), tupleCompare);
@@ -72,13 +72,6 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
     {
         Orden[i] = tupleIndex(tuplas[i]);
     }
-
-    for (u32 i = 0; i < n; i++)
-    {
-        tupleDump(tuplas[i]);
-    }
-
-    printf("\n");
 
     for (u32 i = 0; i < n; i++)
     {

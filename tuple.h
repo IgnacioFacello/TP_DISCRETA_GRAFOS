@@ -7,7 +7,7 @@ struct tuple_st {
 
 typedef struct tuple_st * tuple;
 
-tuple tupleCreate(u32 index, u32 color);
+tuple tupleSet(u32 index, u32 color);
 
 u32 tupleIndex(tuple t);
 

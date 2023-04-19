@@ -5,8 +5,8 @@
 #include "tuple.h"
 
 
-tuple tupleCreate(u32 index, u32 color) {
-    tuple t = malloc(sizeof(tuple));
+tuple tupleSet(u32 index, u32 color) {
+    tuple t = malloc(sizeof(struct tuple_st));
     t->index = index;
     t->color = color;
     return t;
@@ -52,8 +52,8 @@ void tupleDump (tuple t) {
 }
 
 int tupleCompare(const void *a, const void *b) {
-    const struct tuple_st *x = (const struct tuple_st *)a;
-    const struct tuple_st *y = (const struct tuple_st *)b;
+    tuple x = *(tuple *)a;
+    tuple y = *(tuple *)b;
 
     if (x->color % 2 == 0 && y->color % 2 == 0) {
         // Ambos colores son pares, se ordenan de mayor a menor
@@ -62,7 +62,7 @@ int tupleCompare(const void *a, const void *b) {
         } else if (x->color < y->color) {
             return 1;
         } else {
-            return 0;
+            return x->index - y->index;
         }
     } else if (x->color % 2 == 1 && y->color % 2 == 1) {
         // Ambos colores son impares, se ordenan de mayor a menor
@@ -71,7 +71,7 @@ int tupleCompare(const void *a, const void *b) {
         } else if (x->color < y->color) {
             return 1;
         } else {
-            return 0;
+            return x->index - y->index;
         }
     } else if (x->color % 2 == 1) {
         // Color x es impar y color y es par, se pone x antes de y
@@ -81,36 +81,3 @@ int tupleCompare(const void *a, const void *b) {
         return 1;
     }
 }
-
-/*
-int tupleCompare(const void * t1p, const void * t2p) {
-
-    // Negativo si t1p < t2p
-    // Cero si t1p == t2p
-    // Positivo si t1p > t2p
-
-    const tuple t1 = (const tuple) t1p;
-    const tuple t2 = (const tuple) t2p;
-    int colort1 = tupleColor(t1);
-    int colort2 = tupleColor(t2);
-
-    if (isOdd(colort1) && isEven(colort2)) {            // t1 deberia ir antes que t2  
-        return 1;
-
-    }
-
-    if (isEven(colort1) && isOdd(colort2)) {            // t2 deberia ir antes que t1
-        return -1;
-    }
-
-    if (isOdd(colort1) && isOdd(colort2)) {             // tienen misma paridad 
-        return colort1 - colort2;                       // el de menor color es menor
-    } 
-    
-
-    if (isEven(colort1) && isEven(colort2)) {           // tienen misma paridad
-        return colort1 - colort2;       // el de menor color es menor
-    }
-
-}
-*/

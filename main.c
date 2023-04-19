@@ -99,6 +99,7 @@ int main(void)
         printf("El coloreo es: %u\n", total_color);
     }
 
+
     // Greedy con Orden ImparPar
     if (OrdenImparPar(n, Orden, Color) == '0') {
         printf("Orden ImparPar\n");
@@ -119,19 +120,18 @@ int main(void)
         printf("El coloreo es: %u\n", total_color);
     }
 
-    /*
-    // Greedy con orden OrdenJedi
-    if (OrdenJedi(G, Orden, Color) == '0') {
-        printf("Orden Jedi\n");
+    // Greedy con Orden ImparPar
+    if (OrdenImparPar(n, Orden, Color) == '0') {
+        printf("Orden ImparPar\n");
     }
     else {
-        printf("Error Jedi\n");
+        printf("Error ImparPar\n");
     }
 
     settozero(Color, n);
     total_color = Greedy(G, Orden, Color);
-
-        if (ColoreoPropio(G, Color)) {
+    
+    if (ColoreoPropio(G, Color)) {
         printf("El coloreo es propio\n");
         printf("El coloreo es: %u\n", total_color);
     }
@@ -139,7 +139,29 @@ int main(void)
         printf("El coloreo no es propio\n");
         printf("El coloreo es: %u\n", total_color);
     }
-    */
+
+    // Greedy con Orden ImparPar
+    if (OrdenImparPar(n, Orden, Color) == '0') {
+        printf("Orden ImparPar\n");
+    }
+    else {
+        printf("Error ImparPar\n");
+    }
+
+    settozero(Color, n);
+    total_color = Greedy(G, Orden, Color);
+    
+    if (ColoreoPropio(G, Color)) {
+        printf("El coloreo es propio\n");
+        printf("El coloreo es: %u\n", total_color);
+    }
+    else {
+        printf("El coloreo no es propio\n");
+        printf("El coloreo es: %u\n", total_color);
+    }
+
+
+
     free(Orden);
     free(Color);
     DestruirGrafo(G);
