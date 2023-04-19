@@ -2,10 +2,11 @@
 #define _ABBU32_H
 
 #include <stdbool.h>
+#include "EstructuraGrafo23.h"
 
 typedef struct _s_abb * abb;
 
-typedef int abb_elem;
+typedef u32 abb_elem;
 
 abb abb_empty(void);
 /* DESC: Creates an empty tree

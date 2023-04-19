@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <assert.h>
+
 #include "abbU32.h"
+#include "EstructuraGrafo23.h"
 
 struct _s_abb {
     abb_elem elem;
@@ -89,8 +91,8 @@ bool abb_exists(abb tree, abb_elem e) {
     return exists;
 }
 
-unsigned int abb_length(abb tree) {
-    unsigned int length=0;
+u32 abb_length(abb tree) {
+    u32 length=0;
     assert(invrep(tree));
     if (tree != NULL)
     {

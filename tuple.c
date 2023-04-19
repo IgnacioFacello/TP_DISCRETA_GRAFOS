@@ -37,17 +37,14 @@ int tupleCompare(tuple t1, tuple t2) {
 
     if (isEven(t1->color) && isOdd(t2->color)) {
         return 1;
-    } 
-    if (isOdd(t1->color) && isEven(t2->color)) {
+    } else if (isOdd(t1->color) && isEven(t2->color)) {
         return -1;
-    }
-    if (isEven(t1->color) && isEven(t2->color)) {
+    } else if (isEven(t1->color) && isEven(t2->color)) {
         if (t1->color == t2->color) {
             return (int) t1->index - (int) t2->index;
         }
         return (int) t2->color - (int) t1->color;
-    }
-    if (isOdd(t1->color) && isOdd(t2->color)) {
+    } else {
         if (t1->color == t2->color) {
             return (int) t1->index - (int) t2->index;
         }

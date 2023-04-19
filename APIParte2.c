@@ -16,16 +16,13 @@
 
 static u32 minColorVecino(Grafo G, u32 v, u32* Color) { 
     u32 ret, grade, min_color, j, w, max_color;
-    abb aux;
-    ret = error_code;
-    grade = Grado(v, G); // Obterner grado
-    aux = abb_empty(); // Crear arbol binario
+    abb aux = abb_empty();
+    grade = Grado(v, G); // Obtener grado
     // Recorrer los vecinos guardando los colores distintos de 0
     for (j = 0; j < grade; j++) {
         w = IndiceVecino(j, v, G);
         if (Color[w] != 0) {
-            printf("abb add color %u | ",Color[w]);
-            abb_add(aux, Color[w]);
+            aux = abb_add(aux, Color[w]);
         }
     } 
     // Encontrar el primer color que no aparezca en el arbol
@@ -35,12 +32,11 @@ static u32 minColorVecino(Grafo G, u32 v, u32* Color) {
     max_color = Delta(G) + 1;
     if (!abb_is_empty(aux)) {
         while (min_color < max_color && abb_exists(aux, min_color)) {
-            printf("increase next color %u | ",Color[w]);
             min_color++;
         }
     }
     ret = min_color;
-    abb_destroy(aux);
+    aux = abb_destroy(aux);
     return ret;
 }
 
@@ -55,10 +51,6 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     for (u32 i = 0; i < total_vertexs; i++) {
         vertex_index = Orden[i];
         vertex_color = minColorVecino(G, vertex_index, Color);
-        if (vertex_color == error_code) {
-            max_color = error_code;
-            break;
-        }
         Color[vertex_index] = vertex_color;
         max_color = max(max_color, vertex_color);
     }
