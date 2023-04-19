@@ -33,7 +33,10 @@ static u32 isOdd(u32 n) {
     return n % 2 == 1;
 }
 
-int tupleCompare(tuple t1, tuple t2) {
+int tupleCompare(const void * t1p, const void * t2p) {
+
+    const tuple t1 = (const tuple) t1p;
+    const tuple t2 = (const tuple) t2p;
 
     if (isEven(t1->color) && isOdd(t2->color)) {
         return 1;

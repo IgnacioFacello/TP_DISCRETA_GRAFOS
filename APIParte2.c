@@ -121,7 +121,7 @@ void ordenSwap(u32* Orden, struct jedi * jed, u32 n) {
 /* PRE: size(Orden) = size(Color)
         Color = [1,2,...,r-1] 
 */
-char OrdenJedi(Grafo G,u32* Orden,u32* Color) {
+char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     u32 n_vert;
     struct jedi * aux;
 
