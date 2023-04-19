@@ -15,4 +15,6 @@ u32 tupleColor(tuple t);
 
 tuple tupleDestroy(tuple t);
 
+void tupleDump(tuple t);
+
 int tupleCompare(const void * t1p, const void * t2p);

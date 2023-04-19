@@ -25,32 +25,58 @@ tuple tupleDestroy(tuple t) {
     return NULL;
 }
 
-static u32 isEven(u32 n) {
+bool isEven(u32 n) {
     return n % 2 == 0;
 }
 
-static u32 isOdd(u32 n) {
+bool isOdd(u32 n) {
     return n % 2 == 1;
 }
 
+int parity(u32 a, u32 b) {
+    int ret, pa, pb;
+    pa = isEven(a);
+    pb = isEven(b);
+    if (pa == pb) {
+        ret = 0;   // ambos pares o impares
+    } else if (pb) {
+        ret = -1;  // a impar, b par
+    } else if (pa) {
+        ret = 1;   // a par, b impar
+    }
+    return ret;
+}
+
+void tupleDump (tuple t) {
+    printf("(%d, %d) ", t->color, t->index);
+}
+
+
 int tupleCompare(const void * t1p, const void * t2p) {
+
+    // Negativo si t1p < t2p
+    // Cero si t1p == t2p
+    // Positivo si t1p > t2p
 
     const tuple t1 = (const tuple) t1p;
     const tuple t2 = (const tuple) t2p;
 
-    if (isEven(t1->color) && isOdd(t2->color)) {
-        return 1;
-    } else if (isOdd(t1->color) && isEven(t2->color)) {
-        return -1;
-    } else if (isEven(t1->color) && isEven(t2->color)) {
-        if (t1->color == t2->color) {
-            return (int) t1->index - (int) t2->index;
-        }
-        return (int) t2->color - (int) t1->color;
-    } else {
-        if (t1->color == t2->color) {
-            return (int) t1->index - (int) t2->index;
-        }
-        return (int) t2->color - (int) t1->color;
+    if (isOdd(t1->color) && isOdd(t2->color)) {             // tienen misma paridad 
+        return ((int) t2->color) - ((int) t1->color);       // el de menor color es menor
+    } 
+    
+
+    if (isEven(t1->color) && isEven(t2->color)) {           // tienen misma paridad
+        return ((int) t2->color) - ((int) t1->color);       // el de menor color es menor
     }
+
+    if (isOdd(t1->color) && isEven(t2->color)) {            // t1 deberia ir antes que t2  
+        return -1;
+
+    }
+
+    if (isEven(t1->color) && isOdd(t2->color)) {            // t2 deberia ir antes que t1
+        return 1;
+    }
+
 }
