@@ -26,143 +26,91 @@ bool ColoreoPropio (Grafo G, u32 * Color) {
     return check;
 }
 
-void settozero (u32 * Color, u32 n) {
+void SetZero (u32 * Color, u32 n) {
     for (u32 i = 0; i < n; i++) {
         Color[i] = 0;
     }
 }
 
+void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * Color2) {
+    u32 n, cont1, cont2, ret_color1, ret_color2;
+    n = NumeroDeVertices(G);
+    cont1 = 0;
+    cont2 = 0;
+
+    for (u32 i = 0; i < 32;  i++) {
+
+        if (i % 2 == 0) {
+            
+            for (u32 j = 0; j < 16; j++) {
+                OrdenImparPar(n, Orden1, Color1);
+                SetZero(Color1, n);
+                ret_color1 = Greedy(G, Orden1, Color1);
+                cont1++;
+                printf("Greedy Nº%u con OrdenImparPar para arreglo 1 tiene color: %u\n", cont1, ret_color1);
+            }
+
+            for (u32 k = 0; k < 16; k++) {
+                OrdenJedi(G, Orden2, Color2);
+                SetZero(Color2, n);
+                ret_color2 = Greedy(G, Orden2, Color2);
+                cont2++;
+                printf("Greedy Nº%u con OrdenJedi para arreglo 2 tiene color: %u\n", cont2, ret_color2);
+            }
+
+            printf("Cambiamos de Orden\n");
+
+        } else {
+
+            for (u32 j = 0; j < 16; j++) {
+                OrdenImparPar(n, Orden2, Color2);
+                SetZero(Color2, n);
+                ret_color2 = Greedy(G, Orden2, Color2);
+                cont2++;
+                printf("Greedy Nº%u con OrdenImparPar para arreglo 2 tiene color: %u\n", cont2, ret_color2);
+            }
+
+            for (u32 k = 0; k < 16; k++) {
+                OrdenJedi(G, Orden1, Color1);
+                SetZero(Color1, n);
+                ret_color1 = Greedy(G, Orden1, Color1);
+                cont1++;
+                printf("Greedy Nº%u con OrdenJedi para arreglo 1 tiene color: %u\n", cont1, ret_color1);
+            }
+
+            if (i != 15) {
+                printf("Cambiamos de Orden\n");
+            } else {
+                printf("Fin de Greedy\n");
+            }
+            
+        }  
+
+        printf("El mejor coloreo que obtuvimos fue: %u", ); //Falta devolver menor coloreo
+    }
+    
+
+}
+
+
 int main(void)
 {
     Grafo G = ConstruirGrafo();
     u32 n = NumeroDeVertices(G);
-    u32 * Orden = malloc(sizeof(u32) * n);
-    u32 * Color = calloc(sizeof(u32), n);
-    u32 total_color;
-    
-    // Greedy con Orden Natural
-    if (OrdenNatural(n, Orden) == '0') {
-        printf("Orden Natural\n");
-    }
-    else {
-        printf("Error Orden Natural\n");
-    }
+    u32 * Orden1 = malloc(sizeof(u32) * n);
+    u32 * Orden2 = malloc(sizeof(u32) * n);
+    u32 * Color1 = calloc(sizeof(u32), n);
+    u32 * Color2 = calloc(sizeof(u32), n);
 
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
+    OrdenNatural(n, Orden1); 
+    OrdenNatural(n, Orden2);
+    Greedy(G, Orden1, Color1);
+    Greedy(G, Orden1, Color2);
+    greedy_generico(G, Orden1, Orden2, Color1, Color2);
 
-    // Greedy con Orden ImparPar
-    if (OrdenImparPar(n, Orden, Color) == '0') {
-        printf("Orden ImparPar\n");
-    }
-    else {
-        printf("Error ImparPar\n");
-    }
-
-    settozero(Color, n);
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-
-    // Greedy con Orden ImparPar
-    if (OrdenImparPar(n, Orden, Color) == '0') {
-        printf("Orden ImparPar\n");
-    }
-    else {
-        printf("Error ImparPar\n");
-    }
-
-    settozero(Color, n);
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-
-
-    // Greedy con Orden ImparPar
-    if (OrdenImparPar(n, Orden, Color) == '0') {
-        printf("Orden ImparPar\n");
-    }
-    else {
-        printf("Error ImparPar\n");
-    }
-
-    settozero(Color, n);
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-
-    // Greedy con Orden ImparPar
-    if (OrdenImparPar(n, Orden, Color) == '0') {
-        printf("Orden ImparPar\n");
-    }
-    else {
-        printf("Error ImparPar\n");
-    }
-
-    settozero(Color, n);
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-
-    // Greedy con Orden ImparPar
-    if (OrdenImparPar(n, Orden, Color) == '0') {
-        printf("Orden ImparPar\n");
-    }
-    else {
-        printf("Error ImparPar\n");
-    }
-
-    settozero(Color, n);
-    total_color = Greedy(G, Orden, Color);
-    
-    if (ColoreoPropio(G, Color)) {
-        printf("El coloreo es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-    else {
-        printf("El coloreo no es propio\n");
-        printf("El coloreo es: %u\n", total_color);
-    }
-
-
-
-    free(Orden);
-    free(Color);
+    free(Orden1);
+    free(Orden2);
+    free(Color1);
+    free(Color2);
     DestruirGrafo(G);
 }
