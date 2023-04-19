@@ -2,8 +2,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "APIG23.h"
-#include "APIParte2.h"
+#include "API_P1/APIG23.h"
+#include "API_P2/APIParte2.h"
 
 
 char OrdenNatural (u32 n, u32 * Orden) {
@@ -86,7 +86,7 @@ void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             
         }  
 
-        printf("El mejor coloreo que obtuvimos fue: %u", ); //Falta devolver menor coloreo
+        printf("El mejor coloreo que obtuvimos fue: %u", ret_color1); //Falta devolver menor coloreo
     }
     
 
