@@ -31,12 +31,9 @@ static u32 minColorVecino(Grafo G, u32 v, u32* Color) {
     min_color = 1;
     max_color = Delta(G) + 1;
     if (!abb_is_empty(aux)) {
-        while (min_color <= max_color && abb_exists(aux, min_color)) {
+        while (min_color < max_color && abb_exists(aux, min_color)) {
             min_color++;
         }
-    }
-    if (min_color > max_color) {
-        min_color = error_code;
     }
     ret = min_color;
     aux = abb_destroy(aux);
@@ -54,9 +51,6 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     for (u32 i = 0; i < total_vertexs; i++) {
         vertex_index = Orden[i];
         vertex_color = minColorVecino(G, vertex_index, Color);
-        if (vertex_color == error_code) {
-            return error_code;
-        }
         Color[vertex_index] = vertex_color;
         max_color = max(max_color, vertex_color);
     }
