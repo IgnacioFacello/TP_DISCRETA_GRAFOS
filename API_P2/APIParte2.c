@@ -91,7 +91,7 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
  * @param Color Arreglo de colores.
  * @param n Cantidad de vertices.
  */
-u32 max_color(u32 * Color, u32 n) {
+static u32 max_color(u32 * Color, u32 n) {
     u32 max = 1;
     for (size_t i = 0; i < n; i++)
     {
@@ -99,13 +99,6 @@ u32 max_color(u32 * Color, u32 n) {
     }
     return max;
 }
-
-/**
- * Funcion que pasamos a qsort para ordenar el arreglo de jedis segun su valor
- * @brief Compara el valor de dos elementos Jedi, retorna negativo si el primero es menor, 0 si son iguales y positivo si el primero es mayor.
- * @param a Primer elemento a comparar.
- * @param b Segundo elemento a comparar.
- */
 
 /**
  * @brief Calcula el valor Jedi 
@@ -120,10 +113,10 @@ static u32 valueJedi(Grafo G, u32* Color, u32 c) {
     ret = vcol;
     for(i=0; i < n; i++) {
         if(Color[i]==vcol) {
-        ret += Grado(i,G);
+            ret += Grado(i,G);
         }
     }
-    return 0;
+    return ret;
 }
 
 /**
@@ -137,9 +130,7 @@ static void ordenSwap(u32* Orden, tuple * jed, u32 n) {
     u32 aux_index;
     for (size_t i = 0; i < n; i++)
     {
-        aux_index = Orden[i];
         Orden[i] = tupleIndex(jed[i]);
-        Orden[tupleIndex(jed[i])] = aux_index;
     }
 }
 
@@ -153,22 +144,23 @@ static void ordenSwap(u32* Orden, tuple * jed, u32 n) {
 char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     u32 n_vert, maxCol;
     u32 * aux;
+    tuple * jediArr;
 
     n_vert = NumeroDeVertices(G);
     maxCol = max_color(Color, n_vert);
 
     //* Calculamos los valores jedi de cada color para reducir el costo computacional
-    aux = malloc(sizeof(u32) * maxCol); // Imagen de valueJedi
-    for (u32 i = 1; i <= maxCol; i++)
+    aux = calloc(sizeof(u32), maxCol); // Imagen de valueJedi
+    for (u32 i = 0; i < maxCol; i++)
     {
-        aux[i-1] = valueJedi(G, Color, i); // Arreglo con los valores jedi, para cada color aux[i-1] = F(i)
+        aux[i] = valueJedi(G, Color, i+1); // Arreglo con los valores jedi, para cada color aux[i-1] = F(i)
     }
 
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
-    tuple * jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo de vertices y su valor Jedi
-    for (u32 i = 0; i < n_vert; i++)
+    jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo de vertices y su valor Jedi
+    for (size_t i = 0; i < n_vert; i++)
     {
-        jediArr[i] = tupleSet(i, aux[Color[i]-1]); 
+        jediArr[i] = tupleSet(i, aux[Color[i]]); 
     }
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
@@ -176,6 +168,10 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     ordenSwap(Orden, jediArr, n_vert);
     
     //* Liberamos memoria
+    for (size_t i = 0; i <= maxCol; i++)
+    {
+        jediArr[i] = tupleDestroy(jediArr[i]);
+    }
     free(jediArr);
     free(aux);
     return '0';

@@ -72,15 +72,15 @@ int cmpOddEven(const void *a, const void *b) {
     }
 }
 
+/**
+ * Funcion que pasamos a qsort para ordenar el arreglo de jedis segun su valor
+ * @brief Compara el valor de dos elementos Jedi, retorna negativo si el primero es menor, 0 si son iguales y positivo si el primero es mayor.
+ * @param a Primer elemento a comparar.
+ * @param b Segundo elemento a comparar.
+ */
 int cmpJedi(const void *a, const void *b) {
-    tuple x = *(tuple*)a;
-    tuple y = *(tuple*)b;
+    tuple j1 = *(tuple*)a;
+    tuple j2 = *(tuple*)b;
     
-    if (x->color < y->color) {
-        return -1;
-    } else if (x->color > y->color) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return (int)(j2->color - j1->color);
 }

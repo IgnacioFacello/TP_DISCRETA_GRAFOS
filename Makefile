@@ -17,5 +17,5 @@ $(TARGET): $(OBJECTS)
 clean:
 	$(RM) $(OBJECTS) $(TARGET)
 
-test: $(TARGET)
-	(for file in Grafos/* ; do (echo "$$file" ; ./greedy < "$$file") ; done) > tests/test.txt
+testall: $(TARGET)
+	(for file in Grafos/* ; do (echo "\n$$file" ; time ./greedy < "$$file") ; done) > tests/test_all.txt
