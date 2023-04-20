@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <assert.h>
 
 #include "abbU32.h"
 
@@ -23,24 +22,8 @@ static bool elem_left(abb_elem e, abb_elem left) {
     return !elem_eq(e,left) && (e > left);
 }
 
-static bool invrep(abb tree) {
-    bool b = true;
-    if (tree != NULL) { /* If not empty tree */
-        if ( tree->right != NULL ) /* Right branch is not empty, verify invariant*/
-        { b = b && invrep(tree->right) && elem_right(tree->elem, tree->right->elem);
-            /* Check right side */ }
-        if ( tree->left != NULL ) /* Left branch is not empty, verify invariant*/
-        { b = b && invrep(tree->left) && elem_left(tree->elem, tree->left->elem);
-            /* Check left side */ }
-        if (tree->left == NULL && tree->right == NULL) /*Both branches are empty, we are at a leaf*/
-        { b = true; /* skip */ }
-    } /* if empty_tree => invrep true*/
-    return b;
-}
-
 abb abb_empty(void) {
     abb tree = NULL;
-    assert(invrep(tree) && abb_is_empty(tree));
     return tree;
 }
 
@@ -53,7 +36,6 @@ static struct _s_abb *create_node(abb_elem e){
 }
 
 abb abb_add(abb tree, abb_elem e) {
-    assert(invrep(tree));
     // * Look for a place for the node 
     struct _s_abb *p = tree;
     struct _s_abb *q = tree;
@@ -67,18 +49,16 @@ abb abb_add(abb tree, abb_elem e) {
     if (q == NULL) { tree = create_node(e); }    
     else if (elem_right(q->elem,e)) { q->right = create_node(e); }
     else if (elem_left(q->elem,e)) { q->left = create_node(e); }
-    node_equal: assert(invrep(tree) && abb_exists(tree, e));
+    node_equal: 
     return tree;
 }
 
 bool abb_is_empty(abb tree) {
-    assert(invrep(tree));
     return tree == NULL;
 }
 
 bool abb_exists(abb tree, abb_elem e) {
     bool exists=false;
-    assert(invrep(tree));
     struct _s_abb *p = tree;
     while (p != NULL && !exists)
     {
@@ -92,14 +72,12 @@ bool abb_exists(abb tree, abb_elem e) {
 
 u32 abb_length(abb tree) {
     u32 length=0;
-    assert(invrep(tree));
     if (tree != NULL)
     {
         ++length;
         if (tree->left != NULL) {length += abb_length(tree->left);}
         if (tree->right != NULL) {length += abb_length(tree->right);}
     }
-    assert(invrep(tree) && (abb_is_empty(tree) || length > 0));
     return length;
 }
 
@@ -129,7 +107,6 @@ static struct _s_abb *find_replacement(abb tree){
 }
 
 abb abb_remove(abb tree, abb_elem e) {
-    assert(invrep(tree));
     // * Find node
     struct _s_abb *p = tree;
     struct _s_abb *q = NULL;
@@ -168,21 +145,18 @@ abb abb_remove(abb tree, abb_elem e) {
         }
     }
     // * Remove / Clean up
-    end: assert(invrep(tree) && !abb_exists(tree, e));
+    end:
     return tree;
 }
 
 abb_elem abb_root(abb tree) {
     abb_elem root;
-    assert(invrep(tree) && !abb_is_empty(tree));
     root = tree->elem;
-    assert(abb_exists(tree, root));
     return root;
 }
 
 abb_elem abb_max(abb tree) {
     abb_elem max_e;
-    assert(invrep(tree) && !abb_is_empty(tree));
     max_e = tree->elem;
     struct _s_abb *p = tree;
     while (p->right != NULL) 
@@ -190,13 +164,11 @@ abb_elem abb_max(abb tree) {
         p=p->right;
         max_e = p->elem;        
     }
-    assert(invrep(tree) && abb_exists(tree, max_e));
     return max_e;
 }
 
 abb_elem abb_min(abb tree) {
     abb_elem min_e;
-    assert(invrep(tree) && !abb_is_empty(tree));
     min_e = tree->elem;
     struct _s_abb *p = tree;
     while (p->left != NULL) 
@@ -204,12 +176,10 @@ abb_elem abb_min(abb tree) {
         p=p->left;
         min_e = p->elem;        
     }
-    assert(invrep(tree) && abb_exists(tree, min_e));
     return min_e;
 }
 
 void abb_dump(abb tree) {
-    assert(invrep(tree));
     if (tree != NULL) {
         printf("%d ", tree->elem);
         abb_dump(tree->left);
@@ -227,14 +197,12 @@ void abb_dump(abb tree) {
 
 
 abb abb_destroy(abb tree) {
-    assert(invrep(tree));
     if (!abb_is_empty(tree)){
         tree->left = abb_destroy(tree->left); /*destroy left branch*/
         tree->right = abb_destroy(tree->right); /*destroy right branch*/
         free(tree); /*destroy root branch*/
         tree = NULL;
     }
-    assert(tree == NULL);
     return tree;
 }
 

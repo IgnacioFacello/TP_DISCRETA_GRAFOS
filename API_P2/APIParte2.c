@@ -86,52 +86,21 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 }
 /*------------------------------------ Orden Jedi ------------------------------------*/
 
-/**  
- * @brief Xalcula el maximo color de un coloreo.
- * @param Color Arreglo de colores.
- * @param n Cantidad de vertices.
- */
-static u32 max_color(u32 * Color, u32 n) {
-    u32 max = 1;
-    for (size_t i = 0; i < n; i++)
-    {
-        max = (Color[i] > max) ? Color[i] : max;
-    }
-    return max;
-}
-
 /**
  * @brief Calcula el valor Jedi 
  * @param G Grafo (Size n).
+ * @param aux Arreglo auxiliar de valores jedi (Size Delta+1).
  * @param Color Coloreo del grafo (Size n).
- * @param c Color a calcular el valor Jedi (Menor o igual que el color maximo del coloreo).
  */
-static u32 valueJedi(Grafo G, u32* Color, u32 c) {
-    u32 ret, vcol, i, n;
+static void valueJedi(Grafo G, u32 * aux, u32* Color) {
+    u32 i, n, max;
+    max = 0;
     n = NumeroDeVertices(G);
-    vcol = c;
-    ret = vcol;
     for(i=0; i < n; i++) {
-        if(Color[i]==vcol) {
-            ret += Grado(i,G);
-        }
+        max = max > Color[i] ? max : Color[i]; // En teoria solo calcula el maximo. En la practica genera un par de segfaults
+        aux[Color[i]-1] += Grado(i,G) * (Color[i]-1);
     }
-    return ret;
-}
-
-/**
- * @brief Reordenar el arreglo Orden para que sea consistente con el arreglo jedi 
- * @param Orden Arreglo de indices de vertices.
- * @param jed Arreglo de jedis ordenados por valor.
- * @param n Cantidad de vertices.
- */
-
-static void ordenSwap(u32* Orden, tuple * jed, u32 n) {
-    u32 aux_index;
-    for (size_t i = 0; i < n; i++)
-    {
-        Orden[i] = tupleIndex(jed[i]);
-    }
+    aux = realloc(aux, sizeof(u32) * max);  // Recortamos la memoria que no usamos
 }
 
 /** PRE: size(Orden) = size(Color)
@@ -142,34 +111,35 @@ static void ordenSwap(u32* Orden, tuple * jed, u32 n) {
  * @param Color Arreglo del coloreo anterior.
 */
 char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
-    u32 n_vert, maxCol;
+    u32 n_vert;
     u32 * aux;
     tuple * jediArr;
 
     n_vert = NumeroDeVertices(G);
-    maxCol = max_color(Color, n_vert);
 
     //* Calculamos los valores jedi de cada color para reducir el costo computacional
-    aux = calloc(sizeof(u32), maxCol); // Imagen de valueJedi
-    for (u32 i = 0; i < maxCol; i++)
-    {
-        aux[i] = valueJedi(G, Color, i+1); // Arreglo con los valores jedi, para cada color aux[i-1] = F(i)
-    }
+    aux = malloc(sizeof(u32) * (Delta(G) + 1)); 
+    valueJedi(G, aux, Color); // Creamos el arreglo auxiliar de valores jedi
 
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
-    jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo de vertices y su valor Jedi
-    for (size_t i = 0; i < n_vert; i++)
+    jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo auxiliar de vertices y su valor Jedi
+    for (u32 i = 0; i < n_vert; i++)
     {
-        jediArr[i] = tupleSet(i, aux[Color[i]]); 
+        jediArr[i] = tupleSet(i, aux[Color[i]-1]); 
     }
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
     qsort(jediArr, n_vert, sizeof(tuple), cmpJedi);
-    ordenSwap(Orden, jediArr, n_vert);
+    for (u32 i = 0; i < n_vert; i++)
+    {
+        // Reemplazamos con los nuevos indices
+        Orden[i] = tupleIndex(jediArr[i]);
+    }
     
     //* Liberamos memoria
-    for (size_t i = 0; i <= maxCol; i++)
+    for (u32 i = 0; i < n_vert; i++)
     {
+        //!!! Esto sangraba memoria como un puerco
         jediArr[i] = tupleDestroy(jediArr[i]);
     }
     free(jediArr);

@@ -29,14 +29,6 @@ tuple tupleDestroy(tuple t) {
     return NULL;
 }
 
-static bool isEven(u32 n) {
-    return n % 2 == 0;
-}
-
-static bool isOdd(u32 n) {
-    return n % 2 == 1;
-} 
-
 void tupleDump (tuple t) {
     printf("(%d, %d) ", t->color, t->index);
 }
@@ -79,8 +71,8 @@ int cmpOddEven(const void *a, const void *b) {
  * @param b Segundo elemento a comparar.
  */
 int cmpJedi(const void *a, const void *b) {
-    tuple j1 = *(tuple*)a;
-    tuple j2 = *(tuple*)b;
+    tuple j1 = *(tuple *)a;
+    tuple j2 = *(tuple *)b;
     
     return (int)(j2->color - j1->color);
 }
