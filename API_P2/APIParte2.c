@@ -7,6 +7,7 @@
 #include "APIParte2.h"
 #include "abb_U32/abbU32.h"
 #include "tuple.h"
+#include "terna.h"
 
 #define error_code (2^32)-1
 
@@ -116,7 +117,7 @@ static void valueJedi(Grafo G, u32 * aux, u32* Color) {
 char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     u32 n_vert;
     u32 * aux;
-    tuple * jediArr;
+    terna * jediArr;
 
     n_vert = NumeroDeVertices(G);
 
@@ -125,24 +126,24 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     valueJedi(G, aux, Color); // Creamos el arreglo auxiliar de valores jedi
 
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
-    jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo auxiliar de vertices y su valor Jedi
+    jediArr = malloc(sizeof(terna) * n_vert); // Arreglo auxiliar de vertices y su valor Jedi
     for (u32 i = 0; i < n_vert; i++)
     {
-        jediArr[i] = tupleSet(i, aux[Color[i]]); 
+        jediArr[i] = ternaSet(i, Color[i],aux[Color[i]]); 
     }
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
-    qsort(jediArr, n_vert, sizeof(tuple), cmpJedi);
+    qsort(jediArr, n_vert, sizeof(terna), cmpJedi);
     for (u32 i = 0; i < n_vert; i++)
     {
         // Reemplazamos con los nuevos indices
-        Orden[i] = tupleIndex(jediArr[i]);
+        Orden[i] = ternaIndex(jediArr[i]);
     }
     
     //* Liberamos memoria
     for (u32 i = 0; i < n_vert; i++)
     {
-        jediArr[i] = tupleDestroy(jediArr[i]);
+        jediArr[i] = ternaDestroy(jediArr[i]);
     }
     free(jediArr);
     free(aux);

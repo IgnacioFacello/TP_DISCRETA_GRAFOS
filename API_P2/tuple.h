@@ -17,6 +17,4 @@ void tupleDump(tuple t);
 
 int cmpOddEven(const void * a, const void * b);
 
-int cmpJedi (const void * a, const void * b);
-
 #endif
