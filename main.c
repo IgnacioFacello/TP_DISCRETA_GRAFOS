@@ -45,59 +45,65 @@ u32 CheckDecreasing (u32 old, u32 new, char * ord){
 }
 
 void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * Color2) {
-    u32 n, cont1, cont2, ret_color1, ret_color2, min_jedi, min_impar;
+    u32 n, cont1, cont2, ret_color1, ret_color2, min_1, min_2;
     n = NumeroDeVertices(G);
     cont1 = 0;
     cont2 = 0;
-    min_jedi = Delta(G)+2;
-    min_impar = Delta(G)+2;
+    min_1 = Delta(G)+1;
+    min_2 = Delta(G)+1;
 
-    for (u32 i = 0; i < 2;  i++) {
+    for (u32 i = 0; i < 32;  i++) {
         if (i % 2 == 0) {
-            for (u32 j = 0; j < 1; j++) {
+            for (u32 j = 0; j < 16; j++) {
                 OrdenImparPar(n, Orden1, Color1);
                 SetZero(Color1, n);
                 ret_color1 = Greedy(G, Orden1, Color1);
                 PrintProgress(cont1, 1, ret_color1, "Impar");
-                min_impar = CheckDecreasing(min_impar, ret_color1, "Impar");
+                min_1 = CheckDecreasing(min_1, ret_color1, "Impar");
                 cont1++;
             }
 
-            for (u32 k = 0; k < 256; k++) {
+            for (u32 k = 0; k < 16; k++) {
                 OrdenJedi(G, Orden2, Color2);
                 SetZero(Color2, n);
                 ret_color2 = Greedy(G, Orden2, Color2);
                 PrintProgress(cont2, 2, ret_color2, "Jedi");
-                min_jedi = CheckDecreasing(min_jedi, ret_color2, "Jedi");
+                min_2 = CheckDecreasing(min_2, ret_color2, "Jedi");
                 cont2++;
             }
 
+            printf("Cambio de orden\n");
+
         } else {
 
-            for (u32 j = 0; j < 0; j++) {
+            for (u32 j = 0; j < 16; j++) {
                 OrdenImparPar(n, Orden2, Color2);
                 SetZero(Color2, n);
                 ret_color2 = Greedy(G, Orden2, Color2);
                 PrintProgress(cont2, 2, ret_color2, "Impar");
-                min_impar = CheckDecreasing(min_impar, ret_color1,"Impar");
+                min_2 = CheckDecreasing(min_2, ret_color2,"Impar");
                 cont2++;
             }
 
-            for (u32 k = 0; k < 0; k++) {
+            for (u32 k = 0; k < 16; k++) {
                 OrdenJedi(G, Orden1, Color1);
                 SetZero(Color1, n);
                 ret_color1 = Greedy(G, Orden1, Color1);
                 PrintProgress(cont1, 1, ret_color1, "Jedi");
-                min_jedi = CheckDecreasing(min_jedi, ret_color2,"Jedi");
+                min_1 = CheckDecreasing(min_1, ret_color1,"Jedi");
                 cont1++;
             }
-            
-        }  
-        printf("Fin de Greedy\n");
 
+            if(i != 3) {
+                printf("Cambio de orden\n");
+            }
+            
+        }
+
+    }
+        printf("Fin de Greedy\n");
         u32 min = (ret_color1 < ret_color2) ? ret_color1 : ret_color2;
         printf("El mejor coloreo que obtuvimos fue: %u\n", min);
-    }
 }
 
 
@@ -107,8 +113,8 @@ int main(void)
     u32 n = NumeroDeVertices(G);
     u32 * Orden1 = malloc(sizeof(u32) * n);
     u32 * Orden2 = malloc(sizeof(u32) * n);
-    u32 * Color1 = calloc(sizeof(u32), n);
-    u32 * Color2 = calloc(sizeof(u32), n);
+    u32 * Color1 = calloc(n, sizeof(u32));
+    u32 * Color2 = calloc(n, sizeof(u32));
 
     OrdenNatural(n, Orden1); 
     OrdenNatural(n, Orden2);
