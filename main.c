@@ -38,11 +38,11 @@ void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
     cont1 = 0;
     cont2 = 0;
 
-    for (u32 i = 0; i < 32;  i++) {
+    for (u32 i = 0; i < 1;  i++) {
 
         if (i % 2 == 0) {
             
-            for (u32 j = 0; j < 16; j++) {
+            for (u32 j = 0; j < 2; j++) {
                 OrdenImparPar(n, Orden1, Color1);
                 SetZero(Color1, n);
                 ret_color1 = Greedy(G, Orden1, Color1);
@@ -86,10 +86,10 @@ void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             
         }  
 
+        u32 min = (ret_color1 < ret_color2) ? ret_color1 : ret_color2;
+        printf("El mejor coloreo que obtuvimos fue: %u", min); //Falta devolver menor coloreo
         printf("El mejor coloreo que obtuvimos fue: %u", ret_color1); //Falta devolver menor coloreo
     }
-    
-
 }
 
 

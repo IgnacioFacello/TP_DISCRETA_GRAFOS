@@ -4,6 +4,10 @@
 #include "../EstructuraGrafo/EstructuraGrafo23.h"
 #include "tuple.h"
 
+struct tuple_st {
+    u32 index;
+    u32 color;
+};
 
 tuple tupleSet(u32 index, u32 color) {
     tuple t = malloc(sizeof(struct tuple_st));
@@ -25,33 +29,19 @@ tuple tupleDestroy(tuple t) {
     return NULL;
 }
 
-bool isEven(u32 n) {
+static bool isEven(u32 n) {
     return n % 2 == 0;
 }
 
-bool isOdd(u32 n) {
+static bool isOdd(u32 n) {
     return n % 2 == 1;
-}
-
-int parity(u32 a, u32 b) {
-    int ret, pa, pb;
-    pa = isEven(a);
-    pb = isEven(b);
-    if (pa == pb) {
-        ret = 0;   // ambos pares o impares
-    } else if (pb) {
-        ret = -1;  // a impar, b par
-    } else if (pa) {
-        ret = 1;   // a par, b impar
-    }
-    return ret;
-}
+} 
 
 void tupleDump (tuple t) {
     printf("(%d, %d) ", t->color, t->index);
 }
 
-int tupleCompare(const void *a, const void *b) {
+int cmpOddEven(const void *a, const void *b) {
     tuple x = *(tuple *)a;
     tuple y = *(tuple *)b;
 
@@ -79,5 +69,18 @@ int tupleCompare(const void *a, const void *b) {
     } else {
         // Color y es impar y color x es par, se pone y antes de x
         return 1;
+    }
+}
+
+int cmpJedi(const void *a, const void *b) {
+    tuple x = *(tuple*)a;
+    tuple y = *(tuple*)b;
+    
+    if (x->color < y->color) {
+        return -1;
+    } else if (x->color > y->color) {
+        return 1;
+    } else {
+        return 0;
     }
 }

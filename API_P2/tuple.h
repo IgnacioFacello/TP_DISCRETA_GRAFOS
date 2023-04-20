@@ -3,11 +3,6 @@
 
 #include "../EstructuraGrafo/EstructuraGrafo23.h"
 
-struct tuple_st {
-    u32 index;
-    u32 color;
-};
-
 typedef struct tuple_st * tuple;
 
 tuple tupleSet(u32 index, u32 color);
@@ -20,6 +15,8 @@ tuple tupleDestroy(tuple t);
 
 void tupleDump(tuple t);
 
-int tupleCompare(const void * t1p, const void * t2p);
+int cmpOddEven(const void * a, const void * b);
+
+int cmpJedi (const void * a, const void * b);
 
 #endif
