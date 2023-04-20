@@ -31,9 +31,12 @@ static u32 minColorVecino(Grafo G, u32 v, u32* Color) {
     min_color = 1;
     max_color = Delta(G) + 1;
     if (!abb_is_empty(aux)) {
-        while (min_color < max_color && abb_exists(aux, min_color)) {
+        while (min_color <= max_color && abb_exists(aux, min_color)) {
             min_color++;
         }
+    }
+    if (min_color > max_color) {
+        min_color = error_code;
     }
     ret = min_color;
     aux = abb_destroy(aux);
@@ -51,10 +54,16 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     for (u32 i = 0; i < total_vertexs; i++) {
         vertex_index = Orden[i];
         vertex_color = minColorVecino(G, vertex_index, Color);
+        if (vertex_color == error_code) {
+            return error_code;
+        }
         Color[vertex_index] = vertex_color;
         max_color = max(max_color, vertex_color);
     }
-    return max_color;
+    for (u32 i = 0; i < total_vertexs; i++) {
+        Color[i] -= 1;
+    }
+    return max_color-1;
 }
 
 
@@ -98,7 +107,7 @@ static void valueJedi(Grafo G, u32 * aux, u32* Color) {
     n = NumeroDeVertices(G);
     for(i=0; i < n; i++) {
         max = max > Color[i] ? max : Color[i]; // En teoria solo calcula el maximo. En la practica genera un par de segfaults
-        aux[Color[i]-1] += Grado(i,G) * (Color[i]-1);
+        aux[Color[i]] += Grado(i,G) * (Color[i]);
     }
     aux = realloc(aux, sizeof(u32) * max);  // Recortamos la memoria que no usamos
 }
@@ -118,14 +127,14 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     n_vert = NumeroDeVertices(G);
 
     //* Calculamos los valores jedi de cada color para reducir el costo computacional
-    aux = malloc(sizeof(u32) * (Delta(G) + 1)); 
+    aux = calloc(sizeof(u32), (Delta(G) + 1)); 
     valueJedi(G, aux, Color); // Creamos el arreglo auxiliar de valores jedi
 
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
     jediArr = malloc(sizeof(tuple) * n_vert); // Arreglo auxiliar de vertices y su valor Jedi
     for (u32 i = 0; i < n_vert; i++)
     {
-        jediArr[i] = tupleSet(i, aux[Color[i]-1]); 
+        jediArr[i] = tupleSet(i, aux[Color[i]]); 
     }
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
@@ -139,7 +148,6 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     //* Liberamos memoria
     for (u32 i = 0; i < n_vert; i++)
     {
-        //!!! Esto sangraba memoria como un puerco
         jediArr[i] = tupleDestroy(jediArr[i]);
     }
     free(jediArr);

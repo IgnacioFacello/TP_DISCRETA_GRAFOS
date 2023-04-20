@@ -54,40 +54,40 @@ void greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
 
     for (u32 i = 0; i < 2;  i++) {
         if (i % 2 == 0) {
-            for (u32 j = 0; j < 16; j++) {
+            for (u32 j = 0; j < 1; j++) {
                 OrdenImparPar(n, Orden1, Color1);
                 SetZero(Color1, n);
                 ret_color1 = Greedy(G, Orden1, Color1);
-                //PrintProgress(cont1, 1, ret_color1, "Impar");
+                PrintProgress(cont1, 1, ret_color1, "Impar");
                 min_impar = CheckDecreasing(min_impar, ret_color1, "Impar");
                 cont1++;
             }
 
-            for (u32 k = 0; k < 16; k++) {
+            for (u32 k = 0; k < 256; k++) {
                 OrdenJedi(G, Orden2, Color2);
                 SetZero(Color2, n);
                 ret_color2 = Greedy(G, Orden2, Color2);
-                //PrintProgress(cont2, 2, ret_color2, "Jedi");
+                PrintProgress(cont2, 2, ret_color2, "Jedi");
                 min_jedi = CheckDecreasing(min_jedi, ret_color2, "Jedi");
                 cont2++;
             }
 
         } else {
 
-            for (u32 j = 0; j < 16; j++) {
+            for (u32 j = 0; j < 0; j++) {
                 OrdenImparPar(n, Orden2, Color2);
                 SetZero(Color2, n);
                 ret_color2 = Greedy(G, Orden2, Color2);
-                //PrintProgress(cont2, 2, ret_color2, "Impar");
+                PrintProgress(cont2, 2, ret_color2, "Impar");
                 min_impar = CheckDecreasing(min_impar, ret_color1,"Impar");
                 cont2++;
             }
 
-            for (u32 k = 0; k < 16; k++) {
+            for (u32 k = 0; k < 0; k++) {
                 OrdenJedi(G, Orden1, Color1);
                 SetZero(Color1, n);
                 ret_color1 = Greedy(G, Orden1, Color1);
-                //PrintProgress(cont1, 1, ret_color1, "Jedi");
+                PrintProgress(cont1, 1, ret_color1, "Jedi");
                 min_jedi = CheckDecreasing(min_jedi, ret_color2,"Jedi");
                 cont1++;
             }
