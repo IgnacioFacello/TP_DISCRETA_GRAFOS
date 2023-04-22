@@ -29,7 +29,7 @@ Grafo ConstruirGrafo()
 
     // Loading Graph to Tree
     abb tree = abbU32_empty();
-    u32 i = 0;
+    u32 i = 0, grade;
     u32 input1 = 0, input2 = 0;
     vertex vertexA = NULL, vertexB = NULL;
 
@@ -66,8 +66,30 @@ Grafo ConstruirGrafo()
     }
 
     // Loading Tree to Array
-    G->vertexes = abb_mintomax_array(tree, G->vertex_numbers);
+    vertex * vertexes = abb_mintomax_array(tree, G->vertex_numbers);
     abbU32_destroy(tree);
+
+    G->grade = malloc(sizeof(u32) * G->vertex_numbers);
+    G->name = malloc(sizeof(u32) * G->vertex_numbers);
+    G->neighbors = malloc(sizeof(u32 *) * G->vertex_numbers);
+
+    for (u32 i = 0; i < G->vertex_numbers; i++)
+    {
+        grade = vertex_grade(vertexes[i]);
+        G->grade[i] = grade;
+        G->name[i] = vertex_name(vertexes[i]);
+        G->neighbors[i] = malloc(sizeof(u32) * grade);
+        for (u32 j = 0; j < grade; j++)
+        {
+            G->neighbors[i][j] = vertex_index(vertex_neighbor(vertexes[i], j));
+        }
+    }
+
+    for (u32 i = 0; i < G->vertex_numbers; i++) {
+        vertexes[i] = vertex_destroy(vertexes[i]);
+    }
+
+    free(vertexes);
 
     // If the number of edges is not the same as the number of edges read, the graph is not valid.
     if (i != G->edge_numbers)
@@ -82,9 +104,11 @@ void DestruirGrafo(Grafo G)
 {
     for (u32 i = 0; i < G->vertex_numbers; i++)
     {
-        G->vertexes[i] = vertex_destroy(G->vertexes[i]);
+        free(G->neighbors[i]);
     }
-    free(G->vertexes);
+    free(G->neighbors);
+    free(G->grade);
+    free(G->name);
     free(G);
     G = NULL;
 }
@@ -106,7 +130,7 @@ u32 Delta(Grafo G)
 
 u32 Nombre(u32 i, Grafo G)
 {
-    return vertex_name(G->vertexes[i]);
+    return G->name[i];
 }
 
 u32 Grado(u32 i, Grafo G)
@@ -115,7 +139,7 @@ u32 Grado(u32 i, Grafo G)
     {
         return -1;
     }
-    return vertex_grade(G->vertexes[i]);
+    return G->grade[i];
 }
 
 u32 IndiceVecino(u32 j, u32 i, Grafo G)
@@ -124,13 +148,7 @@ u32 IndiceVecino(u32 j, u32 i, Grafo G)
     {
         return -1;
     }
-    vertex input1 = G->vertexes[i];
-    if (j >= vertex_grade(input1))
-    {
-        return -1;
-    }
-    vertex input2 = vertex_neighbor(input1, j);
-    return vertex_index(input2);
+    return G->neighbors[i][j];
 }
 
 // Funciones de Lectura

@@ -5,90 +5,75 @@
 
 #include "../API_P1/APIG23.h"
 #include "APIParte2.h"
-#include "abb_U32/abbU32.h"
 #include "tuple.h"
 #include "terna.h"
+#include "bitmap.h"
 
 #define error_code (2^32)-1
 
-/* PRE: size(Orden) = size(Color)
-        Color = [0,0,...,0,0] 
-*/
-
-static u32 minColorVecino(Grafo G, u32 v, u32* Color) { 
-    u32 ret, grade, min_color, j, w, max_color;
-    abb aux = abb_empty();
+static u32 minColorVecino(Grafo G, u32 v, u32 * Color, Bitmap used_vertex) { 
+    u32 grade, min_color, max_color, j, w;
     grade = Grado(v, G); // Obtener grado
+    Bitmap used_color = create_bitmap(Delta(G) + 1);
     // Recorrer los vecinos guardando los colores distintos de 0
     for (j = 0; j < grade; j++) {
         w = IndiceVecino(j, v, G);
-        if (Color[w] != 0) {
-            aux = abb_add(aux, Color[w]);
+        if (bit_get(used_vertex, w)) {
+            bit_set(used_color, Color[w], true);
         }
     } 
-    // Encontrar el primer color que no aparezca en el arbol
-    // Si el arbol esta vacio devolvemos 1 como menor color
-    // Si no encontramos color devolvemos error_code
-    min_color = 1;
+    min_color = 0;
     max_color = Delta(G) + 1;
-    if (!abb_is_empty(aux)) {
-        while (min_color < max_color && abb_exists(aux, min_color)) {
-            min_color++;
-        }
+    while (min_color < max_color && bit_get(used_color, min_color)) {
+        min_color++;
     }
-    ret = min_color;
-    aux = abb_destroy(aux);
-    return ret;
-}
-
-u32 max(u32 a, u32 b) {
-    return (a > b) ? a : b;
+    free_bitmap(used_color);
+    return min_color;
 }
 
 u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     u32 total_vertexs, max_color, vertex_index, vertex_color;
+    Bitmap used_vertex = create_bitmap(NumeroDeVertices(G));
     total_vertexs = NumeroDeVertices(G);
     max_color = 0;
+
     for (u32 i = 0; i < total_vertexs; i++) {
         vertex_index = Orden[i];
-        vertex_color = minColorVecino(G, vertex_index, Color);
+        vertex_color = minColorVecino(G, vertex_index, Color, used_vertex);
+        bit_set(used_vertex, vertex_index, true);
         Color[vertex_index] = vertex_color;
-        max_color = max(max_color, vertex_color);
+        if (vertex_color > max_color) {
+            max_color = vertex_color;
+        }
     }
-    for (u32 i = 0; i < total_vertexs; i++) {
-        Color[i] -= 1;
-    }
-    return max_color-1;
+
+    free_bitmap(used_vertex);
+    return max_color+1;
 }
 
+/*------------------------------------ Orden ImparPar ------------------------------------*/
 
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 
     tuple * tuplas = malloc(sizeof(tuple) * n);
-    for (u32 i = 0; i < n; i++)
-    {
+    for (u32 i = 0; i < n; i++) {
         tuplas[i] = tupleSet(i, Color[i]);
     }
 
     qsort(tuplas, n, sizeof(tuple), cmpOddEven);
 
-    for (u32 i = 0; i < n; i++)
-    {
+    for (u32 i = 0; i < n; i++) {
         Orden[i] = tupleIndex(tuplas[i]);
     }
 
-    for (u32 i = 0; i < n; i++)
-    {
+    for (u32 i = 0; i < n; i++){
         tupleDestroy(tuplas[i]);
     }
 
-    
     free(tuplas);
-
-
     return '0';
 }
-/*------------------------------------ Orden Jedi ------------------------------------*/
+/*------------------------------------ Orden Jedi     ------------------------------------*/
 
 /**
  * @brief Calcula el valor Jedi 

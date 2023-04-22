@@ -11,7 +11,9 @@ struct GrafoSt
     u32 vertex_numbers; // total number of vertexes
     u32 edge_numbers;   // total number of edges
     u32 delta;          // maximum degree
-    vertex *vertexes;    // array of vertexes
+    u32 * name;         // array of names
+    u32 * grade;        // array of grades
+    u32 * * neighbors;  // array of neighbors
 };
 
 typedef struct GrafoSt GrafoSt;
