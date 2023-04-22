@@ -13,8 +13,8 @@ struct bitmap_t {
 
 Bitmap create_bitmap(u32 width) {
     Bitmap bitmap = malloc(sizeof(struct bitmap_t));
-    bitmap->width = width;
     bitmap->data = calloc((width + 31) / 32, sizeof(u32));  // initialize to all zeros
+    bitmap->width = (width + 31) / 32;
     return bitmap;
 }
 

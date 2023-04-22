@@ -11,10 +11,9 @@
 
 #define error_code (2^32)-1
 
-static u32 minColorVecino(Grafo G, u32 v, u32 * Color, Bitmap used_vertex) { 
+static u32 minColorVecino(Grafo G, u32 v, u32 * Color, Bitmap used_vertex, Bitmap used_color) { 
     u32 grade, min_color, max_color, j, w;
     grade = Grado(v, G); // Obtener grado
-    Bitmap used_color = create_bitmap(Delta(G) + 1);
     // Recorrer los vecinos guardando los colores distintos de 0
     for (j = 0; j < grade; j++) {
         w = IndiceVecino(j, v, G);
@@ -23,23 +22,24 @@ static u32 minColorVecino(Grafo G, u32 v, u32 * Color, Bitmap used_vertex) {
         }
     } 
     min_color = 0;
-    max_color = Delta(G) + 1;
+    max_color = Delta(G)+1;
     while (min_color < max_color && bit_get(used_color, min_color)) {
         min_color++;
     }
-    free_bitmap(used_color);
+    set_zero(used_color);
     return min_color;
 }
 
 u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     u32 total_vertexs, max_color, vertex_index, vertex_color;
     Bitmap used_vertex = create_bitmap(NumeroDeVertices(G));
+    Bitmap used_color = create_bitmap(Delta(G)+1);
     total_vertexs = NumeroDeVertices(G);
     max_color = 0;
 
     for (u32 i = 0; i < total_vertexs; i++) {
         vertex_index = Orden[i];
-        vertex_color = minColorVecino(G, vertex_index, Color, used_vertex);
+        vertex_color = minColorVecino(G, vertex_index, Color, used_vertex, used_color);
         bit_set(used_vertex, vertex_index, true);
         Color[vertex_index] = vertex_color;
         if (vertex_color > max_color) {
@@ -48,6 +48,7 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     }
 
     free_bitmap(used_vertex);
+    free_bitmap(used_color);
     return max_color+1;
 }
 
