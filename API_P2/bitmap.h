@@ -17,4 +17,6 @@ void bitmap_print(Bitmap bitmap);
 
 void set_zero(Bitmap bitmap);
 
+void bitmap_realloc(Bitmap bitmap, u32 new_width);
+
 void free_bitmap(Bitmap bitmap);

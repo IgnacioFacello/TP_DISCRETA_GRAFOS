@@ -6,6 +6,7 @@
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
+#define DO_DEBUG 0
 
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {
@@ -33,8 +34,10 @@ void PrintProgress(u32 cont, u32 id, u32 color, char * ord) {
 
 u32 CheckDecreasing (u32 old, u32 new, char * ord){
     // Check that the new value is less than the old one and return the smaller one
-    if (new > old)
+    if (new > old){
         printf("\tError: Orden %s %u > %u. \n", ord, new, old);
+        exit(1);
+    }
     return (new < old) ? new : old;
 }
 
@@ -51,7 +54,8 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             for (u32 j = 0; j < 16; j++) {
                 OrdenImparPar(n, Orden1, Color1);
                 ret_color1 = Greedy(G, Orden1, Color1);
-                //PrintProgress(cont1, 1, ret_color1, "Impar");
+                if(DO_DEBUG)
+                    PrintProgress(cont1, 1, ret_color1, "Impar");
                 min_1 = CheckDecreasing(min_1, ret_color1, "Impar");
                 cont1++;
             }
@@ -59,7 +63,8 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             for (u32 k = 0; k < 16; k++) {
                 OrdenJedi(G, Orden2, Color2);
                 ret_color2 = Greedy(G, Orden2, Color2);
-                //PrintProgress(cont2, 2, ret_color2, "Jedi");
+                if(DO_DEBUG)
+                    PrintProgress(cont2, 2, ret_color2, "Jedi");
                 min_2 = CheckDecreasing(min_2, ret_color2, "Jedi");
                 cont2++;
             }
@@ -71,7 +76,8 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             for (u32 j = 0; j < 16; j++) {
                 OrdenImparPar(n, Orden2, Color2);
                 ret_color2 = Greedy(G, Orden2, Color2);
-                //PrintProgress(cont2, 2, ret_color2, "Impar");
+                if(DO_DEBUG)
+                    PrintProgress(cont2, 2, ret_color2, "Impar");
                 min_2 = CheckDecreasing(min_2, ret_color2,"Impar");
                 cont2++;
             }
@@ -79,14 +85,15 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             for (u32 k = 0; k < 16; k++) {
                 OrdenJedi(G, Orden1, Color1);
                 ret_color1 = Greedy(G, Orden1, Color1);
-                //PrintProgress(cont1, 1, ret_color1, "Jedi");
+                if(DO_DEBUG)
+                    PrintProgress(cont1, 1, ret_color1, "Jedi");
                 min_1 = CheckDecreasing(min_1, ret_color1,"Jedi");
                 cont1++;
             }
 
-            if(i != 31) {
+            //if(i != 31) {
                 //printf("Cambio de orden\n");
-            }
+            //}
             
         }
 
