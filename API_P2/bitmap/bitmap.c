@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #include "bitmap.h"
-#include "APIParte2.h"
+#include "../APIParte2.h"
 
 struct bitmap_t {
     u32 width;

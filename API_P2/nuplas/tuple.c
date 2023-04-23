@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "../EstructuraGrafo/EstructuraGrafo23.h"
+#include "../../EstructuraGrafo/EstructuraGrafo23.h"
 #include "tuple.h"
 
 struct tuple_st {

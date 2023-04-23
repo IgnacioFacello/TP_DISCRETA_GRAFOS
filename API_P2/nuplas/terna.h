@@ -1,7 +1,7 @@
 #ifndef _TERNA_H
 #define _TERNA_H
 
-#include "../EstructuraGrafo/EstructuraGrafo23.h"
+#include "../../EstructuraGrafo/EstructuraGrafo23.h"
 
 typedef struct terna_st * terna;
 

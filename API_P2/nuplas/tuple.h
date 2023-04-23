@@ -1,7 +1,7 @@
 #ifndef _TUPLE_H
 #define _TUPLE_H
 
-#include "../EstructuraGrafo/EstructuraGrafo23.h"
+#include "../../EstructuraGrafo/EstructuraGrafo23.h"
 
 typedef struct tuple_st * tuple;
 

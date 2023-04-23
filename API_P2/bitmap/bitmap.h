@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#include "APIParte2.h"
+#include "../APIParte2.h"
 
 typedef struct bitmap_t * Bitmap;
 

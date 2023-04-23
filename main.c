@@ -1,12 +1,14 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "API_P1/APIG23.h"
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
 #define DO_DEBUG 0
+#define VERBOSE 1
 
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {
@@ -41,66 +43,89 @@ u32 CheckDecreasing (u32 old, u32 new, char * ord){
     return (new < old) ? new : old;
 }
 
+void printETA(double elapsed, int total_work, int work_done) {
+    double eta = (elapsed/work_done)*(total_work);
+    if (eta >= 3600) {
+       eta /= 3600;
+       printf("\r[Elapsed: %.2fs ETA: %.2fh %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
+    } else if (eta >= 60)
+    {
+        eta /= 60;
+        printf("\r[Elapsed: %.2fs ETA: %.2fm %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
+    } else {
+        printf("\r[Elapsed: %.2fs ETA: %.2fs %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
+    }
+    fflush(stdout); // flush the output buffer to make sure the message is printed immediately
+}
+
 void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * Color2) {
     u32 n, cont1, cont2, ret_color1, ret_color2, min_1, min_2;
+    double elapsed = 0;
+    clock_t start, end;
+    int total_work = 1024;
+    
     n = NumeroDeVertices(G);
-    cont1 = 0;
-    cont2 = 0;
-    min_1 = Delta(G)+1;
-    min_2 = Delta(G)+1;
+    cont1 = 0; cont2 = 0;
+    min_1 = Delta(G)+1; min_2 = Delta(G)+1;
 
-    for (u32 i = 0; i < 32;  i++) {
-        if (i % 2 == 0) {
-            for (u32 j = 0; j < 16; j++) {
-                OrdenImparPar(n, Orden1, Color1);
-                ret_color1 = Greedy(G, Orden1, Color1);
-                if(DO_DEBUG)
-                    PrintProgress(cont1, 1, ret_color1, "Impar");
-                min_1 = CheckDecreasing(min_1, ret_color1, "Impar");
-                cont1++;
-            }
+    for (u32 loop_number = 0; loop_number < 32;  loop_number++) {
+        if (loop_number % 2 == 0) {
+            start = clock();
+                for (u32 j = 0; j < 16; j++) {
+                    OrdenImparPar(n, Orden1, Color1);
+                    ret_color1 = Greedy(G, Orden1, Color1);
+                    if(DO_DEBUG)
+                        PrintProgress(cont1, 1, ret_color1, "Impar");
+                    min_1 = CheckDecreasing(min_1, ret_color1, "Impar");
+                    cont1++;
+                }
+            end = clock();
+            elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+            printETA(elapsed, total_work, cont1+cont2);
 
-            for (u32 k = 0; k < 16; k++) {
-                OrdenJedi(G, Orden2, Color2);
-                ret_color2 = Greedy(G, Orden2, Color2);
-                if(DO_DEBUG)
-                    PrintProgress(cont2, 2, ret_color2, "Jedi");
-                min_2 = CheckDecreasing(min_2, ret_color2, "Jedi");
-                cont2++;
-            }
-
-            //printf("Cambio de orden\n");
+            end = clock();
+                for (u32 k = 0; k < 16; k++) {
+                    OrdenJedi(G, Orden2, Color2);
+                    ret_color2 = Greedy(G, Orden2, Color2);
+                    if(DO_DEBUG)
+                        PrintProgress(cont2, 2, ret_color2, "Jedi");
+                    min_2 = CheckDecreasing(min_2, ret_color2, "Jedi");
+                    cont2++;
+                }
+            end = clock();
+            elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+            printETA(elapsed, total_work, cont1+cont2);
 
         } else {
+            start = clock();
+                for (u32 j = 0; j < 16; j++) {
+                    OrdenImparPar(n, Orden2, Color2);
+                    ret_color2 = Greedy(G, Orden2, Color2);
+                    if(DO_DEBUG)
+                        PrintProgress(cont2, 2, ret_color2, "Impar");
+                    min_2 = CheckDecreasing(min_2, ret_color2,"Impar");
+                    cont2++;
+                }
+            end = clock();
+            elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+            printETA(elapsed, total_work, cont1+cont2);
 
-            for (u32 j = 0; j < 16; j++) {
-                OrdenImparPar(n, Orden2, Color2);
-                ret_color2 = Greedy(G, Orden2, Color2);
-                if(DO_DEBUG)
-                    PrintProgress(cont2, 2, ret_color2, "Impar");
-                min_2 = CheckDecreasing(min_2, ret_color2,"Impar");
-                cont2++;
-            }
-
-            for (u32 k = 0; k < 16; k++) {
-                OrdenJedi(G, Orden1, Color1);
-                ret_color1 = Greedy(G, Orden1, Color1);
-                if(DO_DEBUG)
-                    PrintProgress(cont1, 1, ret_color1, "Jedi");
-                min_1 = CheckDecreasing(min_1, ret_color1,"Jedi");
-                cont1++;
-            }
-
-            //if(i != 31) {
-                //printf("Cambio de orden\n");
-            //}
-            
+            start = clock();
+                for (u32 k = 0; k < 16; k++) {
+                    OrdenJedi(G, Orden1, Color1);
+                    ret_color1 = Greedy(G, Orden1, Color1);
+                    if(DO_DEBUG)
+                        PrintProgress(cont1, 1, ret_color1, "Jedi");
+                    min_1 = CheckDecreasing(min_1, ret_color1,"Jedi");
+                    cont1++;
+                }
+            end = clock();
+            elapsed = (double)(end - start) / CLOCKS_PER_SEC;
+            printETA(elapsed, total_work, cont1+cont2);
         }
-
     }
-        //printf("Fin de Greedy\n");
         u32 min = (ret_color1 < ret_color2) ? ret_color1 : ret_color2;
-        printf("El mejor coloreo que obtuvimos fue: %u\n", min);
+        printf("\nEl mejor coloreo que obtuvimos fue: %u\n", min);
 }
 
 
@@ -113,6 +138,7 @@ int main(void)
     u32 * Color1 = malloc(sizeof(u32) * n);
     u32 * Color2 = malloc(sizeof(u32) * n);
 
+    printETA(0, 1, 1);
     OrdenNatural(n, Orden1); 
     OrdenNatural(n, Orden2);
     Greedy(G, Orden1, Color1);
