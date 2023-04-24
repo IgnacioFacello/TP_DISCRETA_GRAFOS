@@ -176,7 +176,7 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 
     for (u32 i = 0; i <= max_color; i++) {
         aux = (c_group) groups[array[i]];
-        for (u32 j = 0; j < cg_indexLast(aux); j++) {
+        for (u32 j = 0; j < cg_size(aux); j++) {
             Orden[aux_size] = cg_get(aux, j);
             aux_size++;
         }
@@ -240,21 +240,19 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
     qsort(jediArr, max_color, sizeof(tuple), cmpJedi);
-
     for (u32 i = 0; i <= max_color; i++)
     {
         swapGroups(colores_agrupados, i, tupleIndex(jediArr[i])); 
     }
     
-    u32 size, total = 0;
+    u32 size;
     //* Reordenamos el arreglo Orden
     for (u32 i = 0; i <= max_color; i++)
     {
-        size = cg_indexLast(colores_agrupados[i]);
+        size = cg_size(colores_agrupados[i]);
         for (u32 j = 0; j < size; j++)
         {
-            Orden[total] = cg_get(colores_agrupados[i], j);
-            total++;
+            Orden[i+j] = cg_get(colores_agrupados[i], j);
         }
     }
     

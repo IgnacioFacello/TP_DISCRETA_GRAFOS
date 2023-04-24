@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "API_P1/APIG23.h"
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
-#define DO_DEBUG 1
-#define VERBOSE 1
-#define RUN_IP 0
-#define RUN_J 0
+
+bool DO_DEBUG = 0;
+bool VERBOSE = 0;
+bool RUN_IP = 1;
+bool RUN_J = 1;
 
 
 char OrdenNatural (u32 n, u32 * Orden) {
@@ -47,10 +49,12 @@ u32 CheckDecreasing (u32 old, u32 new, char * ord){
 }
 
 void printETA(double elapsed, int total_work, int work_done) {
+    if(!VERBOSE) return;
+    
     double eta = (elapsed/work_done)*(total_work);
     if (eta >= 3600) {
-       eta /= 3600;
-       printf("\r[Elapsed: %.2fs ETA: %.2fh %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
+    eta /= 3600;
+    printf("\r[Elapsed: %.2fs ETA: %.2fh %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
     } else if (eta >= 60)
     {
         eta /= 60;
@@ -132,9 +136,35 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
         printf("\nEl mejor coloreo que obtuvimos fue: %u\n", min);
 }
 
+void parse_argument(char *arg) {
+    int len = strlen(arg);
+    for (int i = 0; i < len; i++) {
+        switch (arg[i]) {
+            case 'd':
+                DO_DEBUG = 1;
+                break;
+            case 'j':
+                RUN_J = 0;
+                break;
+            case 'i':
+                RUN_IP = 0;
+                break;
+            case 'v':
+                VERBOSE = 1;
+                break;
+            default:
+                // Ignore any other characters
+                break;
+        }
+    }
+}
 
-int main(void)
+int main(int argc, char const *argv[])
 {
+    if (argc > 1) {
+        parse_argument((char *)argv[1]);
+    }    
+
     Grafo G = ConstruirGrafo();
     u32 n = NumeroDeVertices(G);
     u32 * Orden1 = (u32 *) malloc(sizeof(u32) * n);

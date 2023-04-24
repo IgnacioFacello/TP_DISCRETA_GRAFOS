@@ -14,7 +14,7 @@ struct bitmap_t {
 Bitmap create_bitmap(u32 width) {
     Bitmap bitmap = malloc(sizeof(struct bitmap_t));
     bitmap->data = calloc((width + 31) / 32, sizeof(u32));  // initialize to all zeros
-    bitmap->width = (width + 31) / 32;
+    bitmap->width = width;
     return bitmap;
 }
 
@@ -48,9 +48,8 @@ void bitmap_print(Bitmap bitmap) {
 }
 
 void set_zero(Bitmap bitmap) {
-    for (u32 i = 0; i < (bitmap->width + 31) / 32; i++) {
-        bitmap->data[i] = 0;
-    }
+    for (u32 i = 0; i < bitmap->width; i++)
+        bit_set(bitmap, i, false);
 }
 
 void bitmap_realloc(Bitmap bitmap, u32 new_width) {
@@ -63,3 +62,13 @@ void free_bitmap(Bitmap bitmap) {
     free(bitmap->data);
     free(bitmap);
 }
+
+/* int main(int argc, char const *argv[])
+{
+    Bitmap bitmap = create_bitmap(100);
+    printf("bitmap->width: %u\n", bitmap->width);
+    bitmap_print(bitmap);
+    bit_set(bitmap, 0, true);
+    bitmap_print(bitmap);
+    return 0;
+} */

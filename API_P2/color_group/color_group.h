@@ -8,8 +8,11 @@
 
 typedef struct color_group_st * c_group;
 
-u32 cg_indexLast(c_group tuple);
+u32 cg_size(c_group tuple);
 
+/**
+ * PRE:Size > 0
+*/
 c_group cg_create(u32 size);
 
 u32 cg_get(c_group tuple, u32 index);
