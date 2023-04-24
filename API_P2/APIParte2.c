@@ -61,7 +61,6 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
 
 /*------------------------------------ Auxiliares ------------------------------------*/
 
-
 /** 
  * @brief Devuelve un arreglo de arreglos de indices de colores donde cada indice es un color.
  * @param Color Arreglo de colores (Size n)
@@ -159,7 +158,6 @@ int cmpOddEven(const void *a, const void *b) {
     }
 }
 
-
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 
     u32 max_color = 0;
@@ -198,12 +196,6 @@ static void swapGroups(c_group * array, u32 a, u32 b){
     array[b] = aux;
 }
 
-/**
- * Funcion que pasamos a qsort para ordenar el arreglo de jedis segun su valor
- * @brief Compara el valor de dos elementos Jedi, retorna negativo si el primero es menor, 0 si son iguales y positivo si el primero es mayor.
- * @param a Primer elemento a comparar.
- * @param b Segundo elemento a comparar.
- */
 int cmpJedi(const void *a, const void *b) {
     tuple j1 = *(tuple *)a;
     tuple j2 = *(tuple *)b;
@@ -245,14 +237,15 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
         swapGroups(colores_agrupados, i, tupleIndex(jediArr[i])); 
     }
     
-    u32 size;
+    u32 size, total = 0;
     //* Reordenamos el arreglo Orden
     for (u32 i = 0; i <= max_color; i++)
     {
         size = cg_size(colores_agrupados[i]);
         for (u32 j = 0; j < size; j++)
         {
-            Orden[i+j] = cg_get(colores_agrupados[i], j);
+            Orden[total] = cg_get(colores_agrupados[i], j);
+            total++;
         }
     }
     

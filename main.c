@@ -14,7 +14,6 @@ bool VERBOSE = 0;
 bool RUN_IP = 1;
 bool RUN_J = 1;
 
-
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {
         Orden[i] = i;
@@ -50,11 +49,11 @@ u32 CheckDecreasing (u32 old, u32 new, char * ord){
 
 void printETA(double elapsed, int total_work, int work_done) {
     if(!VERBOSE) return;
-    
+
     double eta = (elapsed/work_done)*(total_work);
     if (eta >= 3600) {
-    eta /= 3600;
-    printf("\r[Elapsed: %.2fs ETA: %.2fh %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
+        eta /= 3600;
+        printf("\r[Elapsed: %.2fs ETA: %.2fh %.2f%% completado]", elapsed, eta, (double)work_done/total_work*100);
     } else if (eta >= 60)
     {
         eta /= 60;

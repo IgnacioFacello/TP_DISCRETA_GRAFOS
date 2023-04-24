@@ -31,7 +31,7 @@ c_group cg_create(u32 capacity){
 }
 
 u32 cg_get(c_group grupo, u32 index){
-    if (index >= grupo->size)
+    if (index <= grupo->size)
         return grupo->array[index];
     else
         return 0;
