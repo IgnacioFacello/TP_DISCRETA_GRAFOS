@@ -1,7 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -O3 -DNDEBUG -pedantic -std=c99 -g
-SOURCES = API_P2/APIParte2.c API_P1/APIG23.c main.c API_P1/abb_vertex/abb.c EstructuraGrafo/EstructuraGrafo23.c API_P2/tuple.c API_P2/terna.c API_P2/bitmap.c
-OBJECTS = $(SOURCES:.c=.o)
+SOURCES =  main.c  EstructuraGrafo/EstructuraGrafo23.c
+API_P1 = API_P1/APIG23.c API_P1/abb_vertex/abb.c
+API_P2 = API_P2/APIParte2.c API_P2/nuplas/tuple.c API_P2/nuplas/terna.c API_P2/bitmap/bitmap.c API_P2/color_group/color_group.c
+OBJECTS = $(SOURCES:.c=.o) $(API_P1:.c=.o) $(API_P2:.c=.o)
 TARGET = greedy
 
 .PHONY: clean

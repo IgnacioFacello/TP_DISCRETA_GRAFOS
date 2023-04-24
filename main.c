@@ -7,8 +7,11 @@
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
-#define DO_DEBUG 0
+#define DO_DEBUG 1
 #define VERBOSE 1
+#define RUN_IP 0
+#define RUN_J 0
+
 
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {
@@ -62,16 +65,17 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
     u32 n, cont1, cont2, ret_color1, ret_color2, min_1, min_2;
     double elapsed = 0;
     clock_t start, end;
-    int total_work = 1024;
+    int total_work = 32 * (16*RUN_IP + 16*RUN_J) ;
     
     n = NumeroDeVertices(G);
     cont1 = 0; cont2 = 0;
     min_1 = Delta(G)+1; min_2 = Delta(G)+1;
+    ret_color1 = ERROR_CODE; ret_color2 = ERROR_CODE;
 
     for (u32 loop_number = 0; loop_number < 32;  loop_number++) {
         if (loop_number % 2 == 0) {
             start = clock();
-                for (u32 j = 0; j < 16; j++) {
+                for (u32 j = 0; j < 16 && RUN_IP; j++) {
                     OrdenImparPar(n, Orden1, Color1);
                     ret_color1 = Greedy(G, Orden1, Color1);
                     if(DO_DEBUG)
@@ -84,7 +88,7 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             printETA(elapsed, total_work, cont1+cont2);
 
             end = clock();
-                for (u32 k = 0; k < 16; k++) {
+                for (u32 k = 0; k < 16 && RUN_J; k++) {
                     OrdenJedi(G, Orden2, Color2);
                     ret_color2 = Greedy(G, Orden2, Color2);
                     if(DO_DEBUG)
@@ -98,7 +102,7 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
 
         } else {
             start = clock();
-                for (u32 j = 0; j < 16; j++) {
+                for (u32 j = 0; j < 16 && RUN_IP; j++) {
                     OrdenImparPar(n, Orden2, Color2);
                     ret_color2 = Greedy(G, Orden2, Color2);
                     if(DO_DEBUG)
@@ -111,7 +115,7 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
             printETA(elapsed, total_work, cont1+cont2);
 
             start = clock();
-                for (u32 k = 0; k < 16; k++) {
+                for (u32 k = 0; k < 16 && RUN_J; k++) {
                     OrdenJedi(G, Orden1, Color1);
                     ret_color1 = Greedy(G, Orden1, Color1);
                     if(DO_DEBUG)
@@ -133,10 +137,10 @@ int main(void)
 {
     Grafo G = ConstruirGrafo();
     u32 n = NumeroDeVertices(G);
-    u32 * Orden1 = malloc(sizeof(u32) * n);
-    u32 * Orden2 = malloc(sizeof(u32) * n);
-    u32 * Color1 = malloc(sizeof(u32) * n);
-    u32 * Color2 = malloc(sizeof(u32) * n);
+    u32 * Orden1 = (u32 *) malloc(sizeof(u32) * n);
+    u32 * Orden2 = (u32 *) malloc(sizeof(u32) * n);
+    u32 * Color1 = (u32 *) malloc(sizeof(u32) * n);
+    u32 * Color2 = (u32 *) malloc(sizeof(u32) * n);
 
     printETA(0, 1, 1);
     OrdenNatural(n, Orden1); 

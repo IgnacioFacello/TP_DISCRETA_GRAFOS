@@ -15,6 +15,6 @@ tuple tupleDestroy(tuple t);
 
 void tupleDump(tuple t);
 
-int cmpOddEven(const void * a, const void * b);
+/* int cmpOddEven(const void * a, const void * b); */
 
 #endif

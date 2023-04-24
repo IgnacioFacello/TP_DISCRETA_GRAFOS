@@ -5,9 +5,10 @@
 
 #include "../API_P1/APIG23.h"
 #include "APIParte2.h"
-#include "tuple.h"
-#include "terna.h"
-#include "bitmap.h"
+#include "nuplas/tuple.h"
+#include "nuplas/terna.h"
+#include "bitmap/bitmap.h"
+#include "color_group/color_group.h"
 
 #define error_code (2^32)-1
 
@@ -58,42 +59,155 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
     return max_color;
 }
 
+/*------------------------------------ Auxiliares ------------------------------------*/
+
+
+/** 
+ * @brief Devuelve un arreglo de arreglos de indices de colores donde cada indice es un color.
+ * @param Color Arreglo de colores (Size n)
+ * @param max_color Puntero a un u32 donde guardamos el maximo color
+ * @param Size Puntero a un u32 donde guardamos el tamaño del arreglo
+ * @param n Cantidad de vertices
+ */
+static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
+    u32 w, size = 128;
+    *max_color = 0;
+    c_group * ret = malloc(sizeof(c_group) * (size));
+    Bitmap is_color = create_bitmap(n);
+    for (u32 i = 0; i < n; i++)
+    {
+        w = Color[i];
+        if (w >= size) {                // Resize if needed
+            size *= 2;
+            ret = realloc(ret, sizeof(c_group) * (size));
+        }
+        if (!bit_get(is_color, w)) {    // Create the group if it doesn't exist
+            ret[w] = cg_create(32);
+            bit_set(is_color, w, true);
+        }                   
+        cg_add(ret[w], i);             // Add the vertex to the right group
+        if (w > (*max_color))
+            *max_color = w;
+    }
+    ret = realloc(ret, sizeof(c_group) * ((*max_color)+1));
+    if (ret == NULL) {
+        printf("Error en realloc\n");
+        exit(1);
+    }
+    free_bitmap(is_color);
+    return ret;
+}
+
+/** 
+ * @brief 
+ * @param G Grafo (Size n)
+ * @param Color Arreglo de colores (Size n)
+ * @param jedi_arr Arreglo de valores jedi (Size max_color)
+ * @param max_color Puntero a un u32 donde guardamos el maximo color
+ */
+static c_group * agruparColoresJ(const Grafo G, const u32 * Color, u32 * jedi_arr, u32 * max_color) {   
+    c_group * ret = malloc(sizeof(c_group) * (Delta(G)+1));
+    Bitmap group_exists = create_bitmap(Delta(G)+1);
+    u32 n, w;
+    n = NumeroDeVertices(G);
+    * max_color = 0;
+    for (u32 i = 0; i < n; i++)
+    {
+        w = Color[i];                                             // For every color
+        if (!bit_get(group_exists, w)){
+            ret[w] = cg_create(32);                              // Create the group if it doesn't exist
+            bit_set(group_exists, w, true);                       // Mark as created
+        }
+        cg_add(ret[w], i);                                       // Add the vertex to the right group
+        * max_color = (w > * max_color) ? w : * max_color;        // Update max_color
+        jedi_arr[w] += Grado(i, G) * w;                           // Update the jedi value
+    }
+    free_bitmap(group_exists);
+    return ret;
+}
+
 /*------------------------------------ Orden ImparPar ------------------------------------*/
+
+int cmpOddEven(const void *a, const void *b) {
+    u32 x = *(u32 *)a;
+    u32 y = *(u32 *)b;
+
+    if (x % 2 == 0 && y % 2 == 0) {
+        // Ambos colores son pares, se ordenan de mayor a menor
+        if (x > y) {
+            return -1;
+        } else if (x < y) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else if (x % 2 == 1 && y % 2 == 1) {
+        // Ambos colores son impares, se ordenan de mayor a menor
+        if (x > y) {
+            return -1;
+        } else if (x < y) {
+            return 1;
+        } else {
+            return 0;
+        }
+    } else if (x % 2 == 1) {
+        // Color x es impar y color y es par, se pone x antes de y
+        return -1;
+    } else {
+        // Color y es impar y color x es par, se pone y antes de x
+        return 1;
+    }
+}
+
 
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 
-    tuple * tuplas = malloc(sizeof(tuple) * n);
-    for (u32 i = 0; i < n; i++) {
-        tuplas[i] = tupleSet(i, Color[i]);
+    u32 max_color = 0;
+    c_group * groups = agruparColoresIP(Color, &max_color, n);
+
+    u32 * array = malloc(sizeof(u32) * (max_color+1));
+    for (u32 i = 0; i <= max_color; i++) {
+        array[i] = i;
     }
 
-    qsort(tuplas, n, sizeof(tuple), cmpOddEven);
+    qsort(array, max_color+1, sizeof(u32), cmpOddEven);
+    c_group aux = NULL;
+    u32 aux_size = 0;
 
-    for (u32 i = 0; i < n; i++) {
-        Orden[i] = tupleIndex(tuplas[i]);
+    for (u32 i = 0; i <= max_color; i++) {
+        aux = (c_group) groups[array[i]];
+        for (u32 j = 0; j < cg_indexLast(aux); j++) {
+            Orden[aux_size] = cg_get(aux, j);
+            aux_size++;
+        }
     }
 
-    for (u32 i = 0; i < n; i++){
-        tupleDestroy(tuplas[i]);
+    for (u32 i = 0; i <= max_color; i++) {
+        groups[i] = cg_destroy(groups[i]);
     }
 
-    free(tuplas);
+    free(groups);
+    free(array);
     return '0';
 }
 /*------------------------------------ Orden Jedi     ------------------------------------*/
 
+static void swapGroups(c_group * array, u32 a, u32 b){
+    c_group aux = array[a];
+    array[a] = array[b];
+    array[b] = aux;
+}
+
 /**
- * @brief Calcula el valor Jedi 
- * @param G Grafo (Size n).
- * @param aux Arreglo auxiliar de valores jedi (Size Delta+1).
- * @param Color Coloreo del grafo (Size n).
+ * Funcion que pasamos a qsort para ordenar el arreglo de jedis segun su valor
+ * @brief Compara el valor de dos elementos Jedi, retorna negativo si el primero es menor, 0 si son iguales y positivo si el primero es mayor.
+ * @param a Primer elemento a comparar.
+ * @param b Segundo elemento a comparar.
  */
-static void valueJedi(Grafo G, u32 * aux, u32* Color) {
-    u32 i, n;
-    n = NumeroDeVertices(G);
-    for(i=0; i < n; i++) {
-        aux[Color[i]] += Grado(i,G) * (Color[i]);
-    }
+int cmpJedi(const void *a, const void *b) {
+    tuple j1 = *(tuple *)a;
+    tuple j2 = *(tuple *)b;
+    return tupleColor(j1) - tupleColor(j2);
 }
 
 /** PRE: size(Orden) = size(Color)
@@ -104,35 +218,51 @@ static void valueJedi(Grafo G, u32 * aux, u32* Color) {
  * @param Color Arreglo del coloreo anterior.
 */
 char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
-    u32 n_vert;
+    u32 max_color;
     u32 * aux;
-    terna * jediArr;
+    tuple * jediArr;
+    c_group * colores_agrupados;
 
-    n_vert = NumeroDeVertices(G);
+    /**
+     * 1. Agrupamos los colores, al mismo tiempo calculamos el arreglo de valores jedi
+     * 2. Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
+    */
 
-    //* Calculamos los valores jedi de cada color para reducir el costo computacional
     aux = calloc(Delta(G)+ 1, sizeof(u32)); 
-    valueJedi(G, aux, Color); // Creamos el arreglo auxiliar de valores jedi
-
+    colores_agrupados = agruparColoresJ(G, Color, aux, &max_color);
+ 
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
-    jediArr = malloc(sizeof(terna) * n_vert); // Arreglo auxiliar de vertices y su valor Jedi
-    for (u32 i = 0; i < n_vert; i++)
+    jediArr = malloc(sizeof(terna) * (max_color+1)); // Arreglo auxiliar de grupos y su valor Jedi
+    for (u32 i = 0; i <= max_color; i++)
     {
-        jediArr[i] = ternaSet(i, Color[i], aux[Color[i]]); 
+        jediArr[i] = tupleSet(i, aux[i]); 
     }
 
     //* Ordenamos el arreglo de vertices por valor jedi y lo usamos para reordenar el arreglo Orden
-    qsort(jediArr, n_vert, sizeof(terna), cmpJedi);
-    for (u32 i = 0; i < n_vert; i++)
+    qsort(jediArr, max_color, sizeof(tuple), cmpJedi);
+
+    for (u32 i = 0; i <= max_color; i++)
     {
-        // Reemplazamos con los nuevos indices
-        Orden[i] = ternaIndex(jediArr[i]);
+        swapGroups(colores_agrupados, i, tupleIndex(jediArr[i])); 
+    }
+    
+    u32 size, total = 0;
+    //* Reordenamos el arreglo Orden
+    for (u32 i = 0; i <= max_color; i++)
+    {
+        size = cg_indexLast(colores_agrupados[i]);
+        for (u32 j = 0; j < size; j++)
+        {
+            Orden[total] = cg_get(colores_agrupados[i], j);
+            total++;
+        }
     }
     
     //* Liberamos memoria
-    for (u32 i = 0; i < n_vert; i++)
+    for (u32 i = 0; i <= max_color; i++)
     {
-        jediArr[i] = ternaDestroy(jediArr[i]);
+        jediArr[i] = tupleDestroy(jediArr[i]);
+        colores_agrupados[i] = cg_destroy(colores_agrupados[i]);
     }
     free(jediArr);
     free(aux);

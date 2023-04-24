@@ -38,25 +38,3 @@ terna ternaDestroy(terna t) {
 void ternaDump (terna t) {
     printf("(%u, %u, %u) ", t->color, t->index, t->jedi);
 }
-
-/**
- * Funcion que pasamos a qsort para ordenar el arreglo de jedis segun su valor
- * @brief Compara el valor de dos elementos Jedi, retorna negativo si el primero es menor, 0 si son iguales y positivo si el primero es mayor.
- * @param a Primer elemento a comparar.
- * @param b Segundo elemento a comparar.
- */
-int cmpJedi(const void *a, const void *b) {
-    terna j1 = *(terna *)a;
-    terna j2 = *(terna *)b;
-    
-    if (j1->jedi > j2->jedi)
-        return -1;
-    else if (j1->jedi < j2->jedi)
-        return 1;
-    else
-        if (j1->color == j2->color)
-            return j1->index - j2->index;
-        else
-            return j1->color - j2->color;
-    
-}

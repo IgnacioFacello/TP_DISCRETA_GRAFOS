@@ -5,43 +5,52 @@
 
 struct color_group_st
 {
-    
-    u32 size;
-    u32 last;
-    u32 * array
+    u32 size;    // Size of the array
+    u32 last;    // Last asigned element
+    u32 * array; // What it says on the tin
 };
 
-c_group arr_create(u32 size) {
-    c_group tuple = (c_group *) malloc(sizeof(c_group)); // Allocate memory for the tuple
-    tuple->size = size; // Set the size of the tuple
-    tuple->last = 0; // start of unasigned elements
-    tuple->array = (u32 *) calloc(size, sizeof(u32)); // Allocate memory for the array and initialize it to zero
-    return tuple;
+
+u32 cg_indexLast(c_group group) {
+    return group->last+1;
 }
 
-void arr_set(c_group tuple, u32 index, u32 value) {
-    if (index >= tuple->size)
-        tuple->array = (u32 *) realloc(tuple->array, index * 2 * sizeof(u32)); 
-        tuple->last++;
-        // Reallocate memory for the array if the index is out of bounds
-    tuple->array[index] = value; // Set the value at the given index
-}   
+c_group cg_create(u32 size) {
+    c_group group = malloc(sizeof(struct color_group_st)); // Allocate memory for the group
+    group->size = size; // Set the size of the group
+    group->last = 0; // start of unasigned elements
+    group->array = malloc(size * sizeof(u32)); // Allocate memory for the array and initialize it to zero
+    return group;
+}
 
-u32 arr_get(c_group tuple, u32 index) {
-    if (index < tuple->last) {
-        return tuple->array[index]; // Return the value at the given index
+u32 cg_get(c_group group, u32 index) {
+    if (index <= group->last) {
+        return group->array[index]; // Return the value at the given index
     } else {
         fprintf(stderr,"Error: Index out of bounds.\n"); // Print an error message if the index is out of bounds
         return 0;
     }
 }
 
-void arr_add(c_group tuple, u32 value) {
-    arr_set(tuple, tuple->last, value); 
-    // Set the value at the end of the array
+void cg_add(c_group group, u32 value) {;
+    group->last++; 
+    if (group->last == group->size) {
+        group->array = realloc(group->array, ((group->last-1) * 2) * sizeof(u32)); 
+        if (group->array == NULL) {
+            fprintf(stderr,"Error: Could not reallocate memory.\n");
+            exit(1);
+        }
+        group->size = (group->last-1) * 2;
+    }
+    group->array[group->last] = value;
 }
 
-void arr_destroy(c_group tuple) {
-    free(tuple->array); // Free the memory allocated for the array
-    free(tuple); // Free the memory allocated for the tuple
+c_group cg_destroy(c_group group) {
+    if (group != NULL) {
+        if (group->array != NULL) {
+            free(group->array); // Free the memory allocated for the array
+        }
+        free(group);        // Free the memory allocated for the group
+    }
+    return NULL;
 }

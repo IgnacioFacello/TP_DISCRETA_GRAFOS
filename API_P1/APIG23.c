@@ -10,13 +10,13 @@
 
 Grafo ConstruirGrafo()
 {
-    Grafo G = malloc(sizeof(GrafoSt));
+    Grafo G = (Grafo) malloc(sizeof(GrafoSt));
     if (G == NULL)
     {
         return NULL;
     }
     G->delta = 0;
-    char *str = malloc(sizeof(char) * MAX_LINE);
+    char *str = (char *) malloc(sizeof(char) * MAX_LINE);
     while (fscanf(stdin, "c%[^\n]\n", str) != 0)
         ;
     free(str);

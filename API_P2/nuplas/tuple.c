@@ -33,7 +33,7 @@ void tupleDump (tuple t) {
     printf("(%d, %d) ", t->color, t->index);
 }
 
-int cmpOddEven(const void *a, const void *b) {
+/* int cmpOddEven(const void *a, const void *b) {
     tuple x = *(tuple *)a;
     tuple y = *(tuple *)b;
 
@@ -63,3 +63,4 @@ int cmpOddEven(const void *a, const void *b) {
         return 1;
     }
 }
+ */
