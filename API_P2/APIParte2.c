@@ -69,24 +69,25 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
  * @param n Cantidad de vertices
  */
 static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
-    u32 w, size = 128;
+    u32 w, size = n/100;
     *max_color = 0;
-    c_group * ret = malloc(sizeof(c_group) * (size));
+    c_group * ret = malloc(sizeof(c_group) * (size)); 
     Bitmap is_color = create_bitmap(n);
     for (u32 i = 0; i < n; i++)
     {
         w = Color[i];
         if (w >= size) {                // Resize if needed
             size *= 2;
-            ret = realloc(ret, sizeof(c_group) * (size));
+            ret = realloc(ret, sizeof(c_group) * (size)); //! Fuente del Segfault para tamaños iniciales pequeños
         }
         if (!bit_get(is_color, w)) {    // Create the group if it doesn't exist
             ret[w] = cg_create(32);
             bit_set(is_color, w, true);
-        }                   
-        cg_add(ret[w], i);             // Add the vertex to the right group
+        }           
+        cg_add(ret[w], i);             // Add the vertex to the right group //! Segfault ???
         if (w > (*max_color))
             *max_color = w;
+        fflush(stdout);
     }
     ret = realloc(ret, sizeof(c_group) * ((*max_color)+1));
     if (ret == NULL) {
@@ -96,6 +97,16 @@ static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 
     free_bitmap(is_color);
     return ret;
 }
+/**
+ * Debuging
+ * Agrupando colores start - 1039943 - end
+ * Agrupando colores start - 49007 - Segmentation fault (core dumped)
+ * Se rompe en la segunda ejecucion de la funcion
+ * Agrupando colores IP start - 1039943 - size : 345359 - col : 2 - end
+ * Agrupando colores IP start - 49007 - size : 46439 - col : 2 - Segmentation fault (core dumped)
+ * Siempre se rompe en el mismo punto, color y tamaño de grupo
+*/
+
 
 /** 
  * @brief 
@@ -159,7 +170,6 @@ int cmpOddEven(const void *a, const void *b) {
 }
 
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
-
     u32 max_color = 0;
     c_group * groups = agruparColoresIP(Color, &max_color, n);
 
@@ -255,6 +265,7 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
         jediArr[i] = tupleDestroy(jediArr[i]);
         colores_agrupados[i] = cg_destroy(colores_agrupados[i]);
     }
+    free(colores_agrupados);
     free(jediArr);
     free(aux);
     return '0';

@@ -39,7 +39,7 @@ u32 cg_get(c_group grupo, u32 index){
 
 void cg_add(c_group grupo, u32 value){
     if (grupo->size >= grupo->cap){
-        grupo->cap *= 2;
+        grupo->cap = grupo->cap * 2;
         grupo->array = (u32 *) realloc(grupo->array, sizeof(u32) * grupo->cap);
     }
     grupo->array[grupo->size] = value;
