@@ -69,7 +69,7 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
  * @param n Cantidad de vertices
  */
 static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
-    u32 w, size = n/100;
+    u32 w, size = n/100 > 32 ? n/100 : 32;
     *max_color = 0;
     c_group * ret = malloc(sizeof(c_group) * (size)); 
     Bitmap is_color = create_bitmap(n);
