@@ -8,6 +8,8 @@
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
+#define SWITCH_NUMBER 1
+#define ORDER_NUMBER 4
 
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {
@@ -44,27 +46,27 @@ void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * C
     n = NumeroDeVertices(G);
     min_1 = Delta(G)+1; min_2 = Delta(G)+1;
 
-    for (u32 loop_number = 0; loop_number < 31;  loop_number++) {
+    for (u32 loop_number = 0; loop_number < SWITCH_NUMBER;  loop_number++) {
         if (loop_number % 2 == 0) {
-            for (u32 j = 0; j < 16; j++) {
+            for (u32 j = 0; j < ORDER_NUMBER; j++) {
                 OrdenImparPar(n, Orden1, Color1);
                 ret_color1 = Greedy(G, Orden1, Color1);
                 min_1 = CheckDecreasing(min_1, ret_color1, "Impar");
             }
             
-            for (u32 k = 0; k < 16; k++) {
+            for (u32 k = 0; k < ORDER_NUMBER; k++) {
                 OrdenJedi(G, Orden2, Color2);
                 ret_color2 = Greedy(G, Orden2, Color2);
                 min_2 = CheckDecreasing(min_2, ret_color2, "Jedi");
             }
             
         } else {
-            for (u32 j = 0; j < 16; j++) {
+            for (u32 j = 0; j < ORDER_NUMBER; j++) {
                 OrdenImparPar(n, Orden2, Color2);
                 ret_color2 = Greedy(G, Orden2, Color2);
                 min_2 = CheckDecreasing(min_2, ret_color2,"Impar");
             }
-            for (u32 k = 0; k < 16; k++) {
+            for (u32 k = 0; k < ORDER_NUMBER; k++) {
                 OrdenJedi(G, Orden1, Color1);
                 ret_color1 = Greedy(G, Orden1, Color1);
                 min_1 = CheckDecreasing(min_1, ret_color1,"Jedi");

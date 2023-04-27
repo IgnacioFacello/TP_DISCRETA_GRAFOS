@@ -71,23 +71,22 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
 static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
     u32 w, size = n/100 > 32 ? n/100 : 32;
     *max_color = 0;
-    c_group * ret = malloc(sizeof(c_group) * (size)); 
+    c_group * ret = calloc(sizeof(c_group),size); 
     Bitmap is_color = create_bitmap(n);
     for (u32 i = 0; i < n; i++)
     {
         w = Color[i];
-        if (w >= size) {                // Resize if needed
+        while (w >= size) {                // Resize if needed
             size *= 2;
             ret = realloc(ret, sizeof(c_group) * (size)); //! Fuente del Segfault para tamaños iniciales pequeños
         }
         if (!bit_get(is_color, w)) {    // Create the group if it doesn't exist
-            ret[w] = cg_create(32);
+            ret[w] = cg_create();
             bit_set(is_color, w, true);
-        }           
-        cg_add(ret[w], i);             // Add the vertex to the right group //! Segfault ???
+        }
+        ret[w] = cg_add(ret[w], i);             // Add the vertex to the right group //! Segfault ???
         if (w > (*max_color))
             *max_color = w;
-        fflush(stdout);
     }
     ret = realloc(ret, sizeof(c_group) * ((*max_color)+1));
     if (ret == NULL) {
@@ -125,7 +124,7 @@ static c_group * agruparColoresJ(const Grafo G, const u32 * Color, u32 * jedi_ar
     {
         w = Color[i];                                             // For every color
         if (!bit_get(group_exists, w)){
-            ret[w] = cg_create(32);                              // Create the group if it doesn't exist
+            ret[w] = cg_create();                              // Create the group if it doesn't exist
             bit_set(group_exists, w, true);                       // Mark as created
         }
         cg_add(ret[w], i);                                       // Add the vertex to the right group
@@ -170,7 +169,7 @@ int cmpOddEven(const void *a, const void *b) {
 }
 
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
-    u32 max_color = 0;
+    u32 g_size, max_color = 0;
     c_group * groups = agruparColoresIP(Color, &max_color, n);
 
     u32 * array = malloc(sizeof(u32) * (max_color+1));
@@ -184,8 +183,9 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
 
     for (u32 i = 0; i <= max_color; i++) {
         aux = (c_group) groups[array[i]];
-        for (u32 j = 0; j < cg_size(aux); j++) {
-            Orden[aux_size] = cg_get(aux, j);
+        g_size = cg_size(aux);
+        for (u32 j = 0; j < g_size; j++) {
+            Orden[aux_size] = cg_get_next(aux);
             aux_size++;
         }
     }
@@ -254,7 +254,7 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
         size = cg_size(colores_agrupados[i]);
         for (u32 j = 0; j < size; j++)
         {
-            Orden[total] = cg_get(colores_agrupados[i], j);
+            Orden[total] = cg_get_next(colores_agrupados[i]);
             total++;
         }
     }

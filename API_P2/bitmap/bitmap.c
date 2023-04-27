@@ -52,11 +52,6 @@ void set_zero(Bitmap bitmap) {
         bit_set(bitmap, i, false);
 }
 
-void bitmap_realloc(Bitmap bitmap, u32 new_width) {
-    bitmap->data = realloc(bitmap->data, (new_width + 31) / 32 * sizeof(u32));
-    bitmap->width = new_width;
-}
-
 // free the memory allocated for the bitmap
 void free_bitmap(Bitmap bitmap) {
     free(bitmap->data);
