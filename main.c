@@ -8,8 +8,8 @@
 #include "API_P2/APIParte2.h"
 
 #define ERROR_CODE (2^32)-1
-#define SWITCH_NUMBER 1
-#define ORDER_NUMBER 4
+#define SWITCH_NUMBER 31
+#define ORDER_NUMBER 16
 
 char OrdenNatural (u32 n, u32 * Orden) {
     for (u32 i = 0; i < n; i++) {

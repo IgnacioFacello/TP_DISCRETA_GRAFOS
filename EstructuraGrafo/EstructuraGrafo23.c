@@ -17,7 +17,7 @@ vertex vertex_create(u32 name)
     assert(v != NULL);
     v->name = name;
     v->grade = 0;
-    v->cap = 1;
+    v->cap = 128;
     v->index = 0;
     v->neighbors = malloc(v->cap * sizeof(vertex));
     assert(v->neighbors != NULL);

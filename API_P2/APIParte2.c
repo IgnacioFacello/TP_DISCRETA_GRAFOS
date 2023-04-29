@@ -5,10 +5,10 @@
 
 #include "../API_P1/APIG23.h"
 #include "APIParte2.h"
-#include "nuplas/tuple.h"
-#include "nuplas/terna.h"
+#include "tuplas/tuple.h"
 #include "bitmap/bitmap.h"
 #include "color_group/color_group.h"
+#include "color_group/cg_list.h"
 
 #define error_code (2^32)-1
 
@@ -68,30 +68,21 @@ u32 Greedy(Grafo G, u32* Orden, u32* Color) {
  * @param Size Puntero a un u32 donde guardamos el tamaño del arreglo
  * @param n Cantidad de vertices
  */
-static c_group * agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
-    u32 w, size = n/100 > 32 ? n/100 : 32;
+static cg_list agruparColoresIP(const u32 * Color, u32 * max_color, const u32 n) {  
+    u32 w;
     *max_color = 0;
-    c_group * ret = calloc(sizeof(c_group),size); 
+    cg_list ret = list_empty(); 
     Bitmap is_color = create_bitmap(n);
     for (u32 i = 0; i < n; i++)
     {
         w = Color[i];
-        while (w >= size) {                // Resize if needed
-            size *= 2;
-            ret = realloc(ret, sizeof(c_group) * (size)); //! Fuente del Segfault para tamaños iniciales pequeños
-        }
         if (!bit_get(is_color, w)) {    // Create the group if it doesn't exist
-            ret[w] = cg_create();
+            list_set(ret,cg_create(),w);
             bit_set(is_color, w, true);
         }
-        ret[w] = cg_add(ret[w], i);             // Add the vertex to the right group //! Segfault ???
+        cg_add(list_get(ret,w), i);             // Add the vertex to the right group //! Segfault ???
         if (w > (*max_color))
             *max_color = w;
-    }
-    ret = realloc(ret, sizeof(c_group) * ((*max_color)+1));
-    if (ret == NULL) {
-        printf("Error en realloc\n");
-        exit(1);
     }
     free_bitmap(is_color);
     return ret;
@@ -170,7 +161,7 @@ int cmpOddEven(const void *a, const void *b) {
 
 char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
     u32 g_size, max_color = 0;
-    c_group * groups = agruparColoresIP(Color, &max_color, n);
+    cg_list groups = agruparColoresIP(Color, &max_color, n);
 
     u32 * array = malloc(sizeof(u32) * (max_color+1));
     for (u32 i = 0; i <= max_color; i++) {
@@ -182,7 +173,7 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
     u32 aux_size = 0;
 
     for (u32 i = 0; i <= max_color; i++) {
-        aux = (c_group) groups[array[i]];
+        aux = (c_group) list_get(groups,array[i]);
         g_size = cg_size(aux);
         for (u32 j = 0; j < g_size; j++) {
             Orden[aux_size] = cg_get_next(aux);
@@ -191,10 +182,10 @@ char OrdenImparPar(u32 n, u32* Orden, u32* Color) {
     }
 
     for (u32 i = 0; i <= max_color; i++) {
-        groups[i] = cg_destroy(groups[i]);
+        cg_destroy(list_get(groups,i));
     }
 
-    free(groups);
+    list_destroy(groups);
     free(array);
     return '0';
 }
@@ -234,7 +225,7 @@ char OrdenJedi(Grafo G, u32* Orden, u32* Color) {
     colores_agrupados = agruparColoresJ(G, Color, aux, &max_color);
  
     //* Usando los valores previamente calculados asignamos a cada vertice el valor jedi correspondiente a su color
-    jediArr = malloc(sizeof(terna) * (max_color+1)); // Arreglo auxiliar de grupos y su valor Jedi
+    jediArr = malloc(sizeof(tuple) * (max_color+1)); // Arreglo auxiliar de grupos y su valor Jedi
     for (u32 i = 0; i <= max_color; i++)
     {
         jediArr[i] = tupleSet(i, aux[i]); 

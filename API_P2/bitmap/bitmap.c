@@ -57,13 +57,3 @@ void free_bitmap(Bitmap bitmap) {
     free(bitmap->data);
     free(bitmap);
 }
-
-/* int main(int argc, char const *argv[])
-{
-    Bitmap bitmap = create_bitmap(100);
-    printf("bitmap->width: %u\n", bitmap->width);
-    bitmap_print(bitmap);
-    bit_set(bitmap, 0, true);
-    bitmap_print(bitmap);
-    return 0;
-} */

@@ -3,7 +3,7 @@
 
 #include "color_group.h"
 
-#define ARRAY_SIZE 32
+#define ARRAY_SIZE 512
 
 typedef struct node_st
 {
@@ -17,8 +17,8 @@ struct c_group_st
 {
     u32 cap;        // Capacidad. Total de arreglos creados
     u32 size;       // Tamaño. Total de elementos agregados
-    node first;
-    node last;
+    node first;     // Primer nodo
+    node last;      // Ultimo nodo
 };
 
 static node new_node(){
@@ -46,7 +46,6 @@ u32 cg_get(c_group list, u32 index){
         aux = aux->next;
         i++;
     }
-    // printf("GET: index: %u, node: %u, mod: %u, elem : %u\n", index, (u32)(index/32), index % ARRAY_SIZE, aux->array[index % ARRAY_SIZE]);
     return aux->array[index % ARRAY_SIZE];
 }
 
@@ -60,7 +59,6 @@ u32 cg_get_next(c_group list){
         list->first = aux->next;
         free(aux->array);
     }
-    //printf("NXT: elem : %u\n", ret);
     return ret;
 }
 
@@ -86,7 +84,6 @@ c_group cg_add(c_group list, u32 value){
     }
     // Add group to array
     (list->last)->array[list->size % ARRAY_SIZE] = value;
-    // printf("ADD: node: %u, mod: %u, elem : %u\n", (u32)(list->size/32), list->size % ARRAY_SIZE, (list->last)->array[list->size % ARRAY_SIZE]);
     list->size++;
     return list;
 }
@@ -104,26 +101,4 @@ c_group cg_destroy(c_group list){
     free(list);
     return NULL;
 }
-
-/* int main(int argc, char const *argv[])
-{
-    u32 arr_size = 1000;
-    u32 group_size = 10000;
-    c_group * list = calloc(sizeof(c_group),arr_size);
-    for(u32 j = 0; j < arr_size; j++){
-        list[j] = cg_create();
-        for (u32 i = 0; i < group_size; i++)
-            list[j] = cg_add(list[j], i);
-    }
-    printf("------------------------------------------------------------------------------------\n");
-    for(u32 j = 0; j < arr_size; j++){
-        group_size = cg_size(list[j]);
-        for (u32 i = 0; i < group_size; i++)
-            cg_get_next(list[j]);
-    }
-    //printf("\n");
-    for(u32 j = 0; j < arr_size; j++)
-        list[j] = cg_destroy(list[j]);
-    return 0;
-} */
 
