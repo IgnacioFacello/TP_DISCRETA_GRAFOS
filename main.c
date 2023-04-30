@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
 
 #include "API_P1/APIG23.h"
 #include "API_P2/APIParte2.h"
 
-#define ERROR_CODE (2^32)-1
-#define SWITCH_NUMBER 31
+#define SWITCH_NUMBER 32
 #define ORDER_NUMBER 16
 
 char OrdenNatural (u32 n, u32 * Orden) {
@@ -18,6 +15,9 @@ char OrdenNatural (u32 n, u32 * Orden) {
     return '0';
 }
 
+/**
+ * Funcion que verifica si el coloreo es propio.
+*/
 bool ColoreoPropio (Grafo G, u32 * Color) {
     bool check = true;
     u32 grado;
@@ -31,20 +31,29 @@ bool ColoreoPropio (Grafo G, u32 * Color) {
     return check;
 }
 
+/**
+ * Funcion que verifica si se mantiene VIT.
+ * Ademas funciona como un min() para u32.
+*/
 u32 CheckDecreasing (u32 old, u32 new, char * ord){
-    // Check that the new value is less than the old one and return the smaller one
     if (new > old){
         printf("\tError: Orden %s %u > %u. \n", ord, new, old);
         exit(1);
     } 
-    return new; // new <= old
+    return new; // implica que new <= old, caso contrario termina el programa
 }
 
+/**
+ * Funcion que ejecuta Greedy con ambos ordenes e imprime por pantalla el menor de los dos.
+ * Ejecuta cada caso 512 veces. Esto se puede configurar cambiando el valor de las macros al principio del archivo.
+ * El numero de iteraciones de cada caso es SWITCH_NUMBER * ORDER_NUMBER.
+*/
 void Greedy_generico (Grafo G, u32 * Orden1, u32 * Orden2, u32 * Color1, u32 * Color2) {
     u32 n, ret_color1, ret_color2, min_1, min_2;
 
     n = NumeroDeVertices(G);
-    min_1 = Delta(G)+1; min_2 = Delta(G)+1;
+    min_1 = Delta(G)+1; 
+    min_2 = Delta(G)+1;
 
     for (u32 loop_number = 0; loop_number < SWITCH_NUMBER;  loop_number++) {
         if (loop_number % 2 == 0) {

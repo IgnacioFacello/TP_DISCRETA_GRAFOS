@@ -5,12 +5,18 @@
 
 #define ARRAY_SIZE 512
 
+/**
+ * Para mejorar la velocidad de la recorrida de la lista, 
+ * usamos nodos que contienen arrays de tamaño fijo.
+ * Esto permite que para alcanzar, por ejemplo, el elemento 600
+ * solo debemos recorrer 2 nodos, en vez de 600.
+*/
 typedef struct node_st
 {
     // Siempre tamaño ARRAY_SIZE
-    u32 * array;
-    u32 first;
-    struct node_st * next;
+    u32 * array;            // Array de elementos
+    u32 first;              // Indice del primer elemento del array
+    struct node_st * next;  // Siguiente nodo
 } * node;
 
 struct c_group_st
@@ -49,6 +55,9 @@ u32 cg_get(c_group list, u32 index){
     return aux->array[index % ARRAY_SIZE];
 }
 
+/**
+ * Para agilizar el recorrido de la lista podemos tratarla como una queue
+*/
 u32 cg_get_next(c_group list){
     node aux = list->first;
     u32 ret = aux->array[aux->first];
@@ -67,7 +76,7 @@ u32 cg_size(c_group list){
 }
 
 c_group cg_add(c_group list, u32 value){
-    // Increase capacity to match size
+    // Aumentar capacidad de acuerdo al tamaño
     if (list->cap == 0)
     {
         node new = new_node();
@@ -82,7 +91,7 @@ c_group cg_add(c_group list, u32 value){
         list->last = (list->last)->next;
         list->cap += ARRAY_SIZE;
     }
-    // Add group to array
+    // Agregar el valor al array
     (list->last)->array[list->size % ARRAY_SIZE] = value;
     list->size++;
     return list;

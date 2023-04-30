@@ -47,11 +47,6 @@ void bitmap_print(Bitmap bitmap) {
     printf("\n");
 }
 
-void set_zero(Bitmap bitmap) {
-    for (u32 i = 0; i < bitmap->width; i++)
-        bit_set(bitmap, i, false);
-}
-
 // free the memory allocated for the bitmap
 void free_bitmap(Bitmap bitmap) {
     free(bitmap->data);
